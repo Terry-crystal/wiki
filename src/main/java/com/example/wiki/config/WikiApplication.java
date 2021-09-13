@@ -1,12 +1,15 @@
-package com.example.wiki;
+package com.example.wiki.config;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.core.env.Environment;
 
 
+//@ComponentScan({"com.example","com.test"})    为了扫描多个包，因此可以使用
+@ComponentScan("com.example")
 @SpringBootApplication
 public class WikiApplication {
 
