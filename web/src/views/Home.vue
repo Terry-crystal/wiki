@@ -46,24 +46,41 @@
         <a-layout-content
                 :style="{ background: '#FFF', padding: '24px', margin: 0, minHeight: '280px' }"
         >
-            Content
+
+            <pre>{{ebooks}}
+                {{books2}}
+            </pre>
+
         </a-layout-content>
     </a-layout>
 </template>
 
 <script lang="ts">
-    import {defineComponent} from 'vue';
+    import {defineComponent, onMounted, reactive, ref,toRef} from 'vue';
     import axios from 'axios';
 
     export default defineComponent({
         name: 'Home',
         setup() {
             console.log("setup");
-            axios.get("http://localhost:8081/ebook/list?name=Spring").then(
-                ((response) => {
+            const ebooks = ref();   //这个是一个响应式的数据！
+            const ebooks1 = reactive({books:[]});   //reactive()里面一般放一个对象
+
+
+            //生命周期初始化方法
+            onMounted(() => {
+                console.log("onMounted");
+                axios.get("http://localhost:8081/ebook/list?name=Spring").then((response) => {
                     console.log(response);
-                })
-            )
+                    const data = response.data; //此data就是后端中的commonResp
+                    ebooks.value = data.content;
+                    ebooks1.books=data.content;
+                });
+            });
+            return {
+                ebooks,
+                books2:toRef(ebooks1,"books")
+            } //html代码要拿到响应式变量，需要在setup最后return
         }
     });
 </script>
