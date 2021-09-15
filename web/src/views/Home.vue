@@ -114,8 +114,8 @@
 
             //生命周期初始化方法
             onMounted(() => {
-                console.log("onMounted1111");
-                axios.get(process.env.VUE_APP_SERVER+"/ebook/list").then((response) => {
+                console.log("onMounted");
+                axios.get("/ebook/list").then((response) => {
                     console.log(response);
                     const data = response.data; //此data就是后端中的commonResp
                     ebooks.value = data.content;
