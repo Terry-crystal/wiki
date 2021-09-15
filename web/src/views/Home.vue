@@ -1,5 +1,8 @@
 <template>
   <div class="home">
+   <Button type="primary" size={size}>
+            Primary
+          </Button>
     <img alt="Vue logo" src="../assets/logo.png">
     <HelloWorld msg="Welcome to Your Vue.js + TypeScript App"/>
   </div>
