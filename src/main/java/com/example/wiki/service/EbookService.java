@@ -7,6 +7,7 @@ import com.example.wiki.req.EbookReq;
 import com.example.wiki.resp.EbookResp;
 import com.example.wiki.util.CopyUtil;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ObjectUtils;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -26,7 +27,9 @@ public class EbookService {
         EbookExample ebookExample = new EbookExample();
         EbookExample.Criteria criteria = ebookExample.createCriteria(); //以上两行为固定写法
 
-        criteria.andNameLike("%" + req.getName() + "%");    //已经封装好了模糊查询的算法，只需要确认是左查询还是右查询
+        if (!ObjectUtils.isEmpty(req.getName())){
+            criteria.andNameLike("%" + req.getName() + "%");    //已经封装好了模糊查询的算法，只需要确认是左查询还是右查询
+        }
         List<Ebook> ebookList = ebookMapper.selectByExample(ebookExample);
 
 //        List<EbookResp> respList = new ArrayList<>();
