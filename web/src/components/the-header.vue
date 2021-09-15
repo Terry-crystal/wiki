@@ -15,7 +15,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent } from 'vue';
+    import {defineComponent} from 'vue';
 
     /*给组件起了一个名字*/
     export default defineComponent({

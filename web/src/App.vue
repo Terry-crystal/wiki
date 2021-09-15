@@ -3,7 +3,7 @@
 
         <the-header></the-header>
 
-            <router-view/>
+        <router-view/>
 
         <the-footer></the-footer>
 
@@ -12,13 +12,13 @@
 
 
 <script lang="ts">
-    import { defineComponent } from 'vue';
+    import {defineComponent} from 'vue';
     import TheHeader from '@/components/the-header.vue';
     import TheFooter from '@/components/the-footer.vue';
 
     export default defineComponent({
         name: 'app',
-        components:{
+        components: {
             TheHeader,
             TheFooter,
         },
