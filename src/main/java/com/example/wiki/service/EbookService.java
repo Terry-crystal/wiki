@@ -3,8 +3,9 @@ package com.example.wiki.service;
 import com.example.wiki.domain.Ebook;
 import com.example.wiki.domain.EbookExample;
 import com.example.wiki.mapper.EbookMapper;
-import com.example.wiki.req.EbookReq;
-import com.example.wiki.resp.EbookResp;
+import com.example.wiki.req.EbookQueryReq;
+import com.example.wiki.req.EbookSaveReq;
+import com.example.wiki.resp.EbookQueryResp;
 import com.example.wiki.resp.PageResp;
 import com.example.wiki.util.CopyUtil;
 import com.github.pagehelper.PageHelper;
@@ -31,7 +32,7 @@ public class EbookService {
     @Resource
     private EbookMapper ebookMapper;
 
-    public PageResp<EbookResp> list(EbookReq req) {
+    public PageResp<EbookQueryResp> list(EbookQueryReq req) {
 
         EbookExample ebookExample = new EbookExample();
         EbookExample.Criteria criteria = ebookExample.createCriteria(); //以上两行为固定写法
@@ -54,14 +55,28 @@ public class EbookService {
 //        }
 
         //列表复制
-        List<EbookResp> respList = CopyUtil.copyList(ebookList, EbookResp.class);
+        List<EbookQueryResp> respList = CopyUtil.copyList(ebookList, EbookQueryResp.class);
 
-        PageResp<EbookResp> pageResp = new PageResp<>();
+        PageResp<EbookQueryResp> pageResp = new PageResp<>();
 
         pageResp.setTotal(pageInfo.getTotal()); //获取总行数，建议将数据返回到前端中，这样方便前端自己计算页码
         pageResp.setList(respList);
 
         return pageResp;
+    }
+
+    /**
+     * 保存电子书功能 可以是编辑的保存也可以是新增的保存
+     */
+    public void save(EbookSaveReq req) {
+        Ebook ebook = CopyUtil.copy(req, Ebook.class);  //将请求参数变成我们的实体
+        if (ObjectUtils.isEmpty(req.getId())) {
+            //新增
+            ebookMapper.insert(ebook);
+        } else {
+            //更新
+            ebookMapper.updateByPrimaryKey(ebook);
+        }
     }
 
 }
