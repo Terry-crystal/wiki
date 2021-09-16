@@ -20,14 +20,22 @@
                 <template #cover="{ text: cover }">
                     <img v-if="cover" :src="cover" alt="avatar"/>
                 </template>
+
                 <template v-slot:action="{ text, record }">
                     <a-space size="small">
                         <a-button type="primary" @click="edit(record)">
                             编辑
                         </a-button>
-                        <a-button type="danger">
-                            删除
-                        </a-button>
+
+                        <a-popconfirm
+                                title="删除后不可恢复，确认删除？"
+                                ok-text="是"
+                                cancel-text="否"
+                                @confirm="handleDelete(record.id)"
+                        >
+                            <a-button type="danger">删除</a-button>
+                        </a-popconfirm>
+
                     </a-space>
                 </template>
             </a-table>
@@ -55,7 +63,7 @@
                 <a-input v-model:value="ebook.category2Id"/>
             </a-form-item>
             <a-form-item label="描述">
-                <a-input v-model:value="ebook.desc" type="textarea"/>
+                <a-input v-model:value="ebook.description" type="textarea"/>
             </a-form-item>
         </a-form>
 
@@ -164,8 +172,8 @@
 
                 //在对编辑好的电子书信息进行保存,发保存请求
                 axios.post("/ebook/save", ebook.value).then((response) => {
-                    const data = response.data;
-                    if (data.success) { //data=CommonResp
+                    const data = response.data;//data=CommonResp
+                    if (data.success) {
                         modalLoading.value = false; //拿到结果之后去掉model框
                         modalVisible.value = false; //拿到结果之后才会取消loading效果
 
@@ -183,8 +191,8 @@
              */
             const edit = (record: any) => {
                 modalVisible.value = true;  //显示模糊框
-                ebook.value = record ;   //从record响应式变量中获取数据填充到模糊框
-                console.log("这是我在测试数据："+record.id)
+                ebook.value = record;   //从record响应式变量中获取数据填充到模糊框
+                console.log("这是我在测试数据：" + record.id)
             };
 
             /**
@@ -193,6 +201,22 @@
             const add = () => {
                 modalVisible.value = true;  //显示模糊框
                 ebook.value = {};   //将模糊框内部数据清空
+            };
+
+            /**
+             * 删除
+             */
+            const handleDelete = (id: number) => {   //Long类型对应前端类型为number类型
+                axios.delete("/ebook/delete/" + id).then((response) => {
+                    const data = response.data;//data=CommonResp
+                    if (data.success) {
+                        //重新加载列表
+                        handleQuery({
+                            page: pagination.value.current, //重新查询当前这个分页组件所在的页码
+                            size: pagination.value.pageSize,
+                        });
+                    }
+                });
             };
 
             onMounted(() => {
@@ -215,7 +239,9 @@
                 ebook,
                 modalVisible,
                 modalLoading,
-                handleModalOk
+                handleModalOk,
+
+                handleDelete
             }
         }
     });
