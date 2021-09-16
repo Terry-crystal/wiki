@@ -88,6 +88,7 @@ public class EbookService {
 
     /**
      * 使用id对某一电子书进行删除
+     *
      * @param id
      */
     public void delete(Long id) {

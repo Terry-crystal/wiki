@@ -206,7 +206,7 @@
             /**
              * 删除
              */
-            const handleDelete = (id: number) => {   //Long类型对应前端类型为number类型
+            const handleDelete = (id: string) => {   //Long类型对应前端类型为number类型
                 axios.delete("/ebook/delete/" + id).then((response) => {
                     const data = response.data;//data=CommonResp
                     if (data.success) {

@@ -1,6 +1,6 @@
 <template>
     <a-layout-footer style="text-align: center">
-        爪哇电子书
+        伞兵电子书管理系统
     </a-layout-footer>
 </template>
 
