@@ -87,7 +87,7 @@
 
 
 <script lang="ts">
-    import {defineComponent, onMounted, reactive, ref, toRef} from 'vue';
+    import {defineComponent, onMounted, ref} from 'vue';
     import axios from 'axios';
 
     /* const listData: Record<string, string>[] = [];
@@ -109,7 +109,7 @@
         setup() {
             console.log("setup");
             const ebooks = ref();   //这个是一个响应式的数据！
-            const ebooks1 = reactive({books: []});   //reactive()里面一般放一个对象
+            // const ebooks1 = reactive({books: []});   //reactive()里面一般放一个对象
 
 
             //生命周期初始化方法
