@@ -3,6 +3,12 @@
         <a-layout-content
                 :style="{ background: '#fff', padding: '24px', margin: 0, minHeight: '280px' }"
         >
+            <p>
+                <a-button type="primary" @click="add()" size="large">
+                    新增
+                </a-button>
+            </p>
+
             <a-table
                     :columns="columns"
                     :row-key="record => record.id"
@@ -176,8 +182,17 @@
              * 编辑
              */
             const edit = (record: any) => {
-                modalVisible.value = true;
-                ebook.value = record
+                modalVisible.value = true;  //显示模糊框
+                ebook.value = record ;   //从record响应式变量中获取数据填充到模糊框
+                console.log("这是我在测试数据："+record.id)
+            };
+
+            /**
+             * 新增
+             */
+            const add = () => {
+                modalVisible.value = true;  //显示模糊框
+                ebook.value = {};   //将模糊框内部数据清空
             };
 
             onMounted(() => {
@@ -195,6 +210,7 @@
                 handleTableChange,
 
                 edit,
+                add,
 
                 ebook,
                 modalVisible,
