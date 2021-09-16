@@ -9,6 +9,25 @@ import axios from 'axios';
 
 axios.defaults.baseURL = process.env.VUE_APP_SERVER;    //改axios的baseUrl为读取系统配置文件，此baseUrl不是vue的URL！
 
+
+/**
+ * axios拦截器
+ */
+axios.interceptors.request.use(function (config) {
+    console.log('请求参数：', config);
+    return config;
+}, error => {
+    return Promise.reject(error);
+});
+axios.interceptors.response.use(function (response) {
+    console.log('返回结果：', response);
+    return response;
+}, error => {
+    console.log('返回错误：', error);
+    return Promise.reject(error);
+});
+
+
 const app = createApp(App);
 app.use(store).use(router).use(Antd).mount('#app');
 
