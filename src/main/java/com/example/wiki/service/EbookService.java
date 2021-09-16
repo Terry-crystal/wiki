@@ -5,6 +5,7 @@ import com.example.wiki.domain.EbookExample;
 import com.example.wiki.mapper.EbookMapper;
 import com.example.wiki.req.EbookReq;
 import com.example.wiki.resp.EbookResp;
+import com.example.wiki.resp.PageResp;
 import com.example.wiki.util.CopyUtil;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -30,7 +31,7 @@ public class EbookService {
     @Resource
     private EbookMapper ebookMapper;
 
-    public List<EbookResp> list(EbookReq req) {
+    public PageResp<EbookResp> list(EbookReq req) {
 
         EbookExample ebookExample = new EbookExample();
         EbookExample.Criteria criteria = ebookExample.createCriteria(); //以上两行为固定写法
@@ -38,13 +39,11 @@ public class EbookService {
         if (!ObjectUtils.isEmpty(req.getName())) {
             criteria.andNameLike("%" + req.getName() + "%");    //已经封装好了模糊查询的算法，只需要确认是左查询还是右查询
         }
-        PageHelper.startPage(1, 3);  //实现后端分页功能，集成插件即可
+        PageHelper.startPage(req.getPage(), req.getSize());  //实现后端分页功能，集成插件即可
         //但是使用这个类，只对一个select语句有作用，如果有多条select语句则会失效
         List<Ebook> ebookList = ebookMapper.selectByExample(ebookExample);
 
         PageInfo<Ebook> pageInfo = new PageInfo<>(ebookList);   //需要把查出数据源放在后面
-        LOG.info("总行数：{}", pageInfo.getTotal());     //获取总行数，建议将数据返回到前端中，这样方便前端自己计算页码
-
 
 //        List<EbookResp> respList = new ArrayList<>();
 //        for (Ebook ebook : ebookList) {
@@ -57,7 +56,12 @@ public class EbookService {
         //列表复制
         List<EbookResp> respList = CopyUtil.copyList(ebookList, EbookResp.class);
 
-        return respList;
+        PageResp<EbookResp> pageResp = new PageResp<>();
+
+        pageResp.setTotal(pageInfo.getTotal()); //获取总行数，建议将数据返回到前端中，这样方便前端自己计算页码
+        pageResp.setList(respList);
+
+        return pageResp;
     }
 
 }
