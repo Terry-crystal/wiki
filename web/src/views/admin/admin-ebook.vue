@@ -82,7 +82,7 @@
             const ebooks = ref();
             const pagination = ref({
                 current: 1,
-                pageSize: 1001,
+                pageSize: 10,
                 total: 0
             });
             const loading = ref(false);
@@ -177,9 +177,10 @@
 
                 //在对编辑好的电子书信息进行保存,发保存请求
                 axios.post("/ebook/save", ebook.value).then((response) => {
+                    modalLoading.value = false; //只要后端有返回，就把效果去掉
+
                     const data = response.data;//data=CommonResp
                     if (data.success) {
-                        modalLoading.value = false; //拿到结果之后去掉model框
                         modalVisible.value = false; //拿到结果之后才会取消loading效果
 
                         //重新加载列表
@@ -187,6 +188,8 @@
                             page: pagination.value.current, //重新查询当前这个分页组件所在的页码
                             size: pagination.value.pageSize,
                         });
+                    } else {
+                        message.error(data.message);
                     }
                 });
             };
