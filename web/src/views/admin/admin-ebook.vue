@@ -73,11 +73,15 @@
             <a-form-item label="名称">
                 <a-input v-model:value="ebook.name"/>
             </a-form-item>
-            <a-form-item label="分类一">
-                <a-input v-model:value="ebook.category1Id"/>
-            </a-form-item>
-            <a-form-item label="分类二">
-                <a-input v-model:value="ebook.category2Id"/>
+            <a-form-item label="分类">
+                <!--v-model:value 绑定一个value，而且需要绑定的时响应式变量-->
+                <!--field-names label 显示的是哪个字段  value是我实际要取的值 id，name，children就是level1的属性-->
+                <!--options 中就是树分支数组-->
+                <a-cascader
+                        v-model:value="categoryIds"
+                        :options="level1"
+                        :field-names="{label:'name', value:'id', children:'children' }"
+                />
             </a-form-item>
             <a-form-item label="描述">
                 <a-input v-model:value="ebook.description" type="textarea"/>
@@ -191,11 +195,15 @@
             });
 
             // -------- 表单 ---------
-            const ebook = ref({});
+            const categoryIds = ref();    //数组【100，101对应：前端开发/vue 这样的数据】
+            const ebook = ref();
             const modalVisible = ref(false);
             const modalLoading = ref(false);
             const handleModalOk = () => {
                 modalLoading.value = true;  //在保存的时候先显示一个保存的效果
+
+                ebook.value.category1Id = categoryIds.value[0];
+                ebook.value.category2Id = categoryIds.value[1];
 
                 //在对编辑好的电子书信息进行保存,发保存请求
                 axios.post("/ebook/save", ebook.value).then((response) => {
@@ -222,6 +230,7 @@
             const edit = (record: any) => {
                 modalVisible.value = true;  //显示模糊框
                 ebook.value = Tool.copy(record);   //从record响应式变量中先复制对象再填充获取数据填充到模糊框
+                categoryIds.value = [ebook.value.category1Id, ebook.value.category2Id]  //将ebook中的第一和第二分类组合起来给前面渲染，显示出一级和二级分类
             };
 
             /**
@@ -248,7 +257,38 @@
                 });
             };
 
+            /**
+             * 一级分类树，children属性就是二级分类
+             * [{
+             *   id: "",
+             *   name: "",
+             *   children: [{
+             *     id: "",
+             *     name: "",
+             *   }]
+             * }]
+             */
+            const level1 = ref();
+
+            const handleQueryCategory = () => {
+                loading.value = true;
+                axios.get("/category/all").then((response) => {
+                    loading.value = false;
+                    const data = response.data;
+                    if (data.success) {
+                        const categorys = data.content;
+                        console.log("原始数据：", categorys);
+                        level1.value = [];
+                        level1.value = Tool.array2Tree(categorys, 0);
+                        console.log("树形结构：", level1.value);
+                    } else {
+                        message.error(data.message);
+                    }
+                });
+            }
+
             onMounted(() => {
+                handleQueryCategory();  //在初始化的时候把所有的分类查出来
                 handleQuery({
                     page: 1,
                     size: pagination.value.pageSize,
@@ -265,13 +305,17 @@
 
                 edit,
                 add,
-                handleEbookDelete,
+
 
                 ebook,
                 modalVisible,
                 modalLoading,
                 handleModalOk,
-                handleQuery
+                handleQuery,
+                categoryIds,
+                level1,
+
+                handleEbookDelete,
             };
         }
     });

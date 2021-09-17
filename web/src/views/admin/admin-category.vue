@@ -33,6 +33,7 @@
 
                 <template v-slot:action="{ text, record }">
                     <a-space size="small">
+
                         <a-button type="primary" @click="edit(record)">
                             编辑
                         </a-button>
@@ -64,21 +65,17 @@
                 <a-input v-model:value="category.name"/>
             </a-form-item>
             <a-form-item label="父分类">
-
-                <a-input v-model:value="category.parent"/>
                 <a-select
                         ref="select"
                         v-model:value="category.parent"
                 >
-
                     <a-select-option value="0">无</a-select-option>
                     <!--在属性中使用变量，直接使用就可以了-->
-                    <a-select-option v-for="c in level1" :key="c.id" :value="c.id" :disabled="category.id === c.id"> <!--选项和自身一样的情况下不能选-->
+                    <a-select-option v-for="c in level1" :key="c.id" :value="c.id" :disabled="category.id === c.id">
+                        <!--选项和自身一样的情况下不能选-->
                         {{c.name}}  <!--在节点中使用变量，需要使用两个大括号-->
                     </a-select-option>
-
                 </a-select>
-
             </a-form-item>
             <a-form-item label="顺序">
                 <a-input v-model:value="category.sort"/>
