@@ -38,6 +38,13 @@
                     <img v-if="cover" :src="cover" alt="avatar"/>
                 </template>
 
+                <!--新增一个渲染 写一个方法，通过id获得名称-->
+                <template v-slot:category="{ text, record }">
+
+                    <span>{{ getCategoryName(record.category1Id) }} / {{ getCategoryName(record.category2Id) }}</span>
+
+                </template>
+
                 <template v-slot:action="{ text, record }">
                     <a-space size="small">
                         <a-button type="primary" @click="edit(record)">
@@ -45,7 +52,7 @@
                         </a-button>
 
                         <a-popconfirm
-                                title="shjdasad？"
+                                title="删除后不可恢复，确认删除？"
                                 ok-text="是"
                                 cancel-text="否"
                                 @confirm="handleEbookDelete(record.id)"
@@ -79,8 +86,8 @@
                 <!--options 中就是树分支数组-->
                 <a-cascader
                         v-model:value="categoryIds"
-                        :options="level1"
                         :field-names="{label:'name', value:'id', children:'children' }"
+                        :options="level1"
                 />
             </a-form-item>
             <a-form-item label="描述">
@@ -123,13 +130,8 @@
                     dataIndex: 'name'
                 },
                 {
-                    title: '分类一',
-                    key: 'category1Id',
-                    dataIndex: 'category1Id'
-                },
-                {
-                    title: '分类二',
-                    dataIndex: 'category2Id'
+                    title: '分类',
+                    slots: {customRender: 'category'}   //带一个渲染，就是上面的渲染
                 },
                 {
                     title: '文档数',
@@ -186,13 +188,6 @@
                     size: pagination.pageSize
                 });
             };
-
-            onMounted(() => {
-                handleQuery({
-                    page: 1,
-                    size: pagination.value.pageSize
-                });
-            });
 
             // -------- 表单 ---------
             const categoryIds = ref();    //数组【100，101对应：前端开发/vue 这样的数据】
@@ -268,24 +263,46 @@
              *   }]
              * }]
              */
-            const level1 = ref();
-
+            const level1 = ref();   //这是响应式变量，是可以给html使用的
+            let categorys: any;     //这是一个普通的变量，就是在js中计算使用的
+            /**
+             * 查询所有的分类
+             */
             const handleQueryCategory = () => {
                 loading.value = true;
                 axios.get("/category/all").then((response) => {
                     loading.value = false;
                     const data = response.data;
                     if (data.success) {
-                        const categorys = data.content;
-                        console.log("原始数据：", categorys);
+                        categorys = data.content;
                         level1.value = [];
                         level1.value = Tool.array2Tree(categorys, 0);
-                        console.log("树形结构：", level1.value);
                     } else {
                         message.error(data.message);
                     }
                 });
-            }
+            };
+
+            /**
+             * 获取分类名字，使用逻辑循环对比得到分类id名称
+             * @param cid   分类id
+             * result 返回名称
+             */
+            const getCategoryName = (cid: number) => {
+                // console.log("这是："+cid)
+                if (categorys!=null){
+                    let result = "";
+                    categorys.forEach((item: any) => {
+                        if (item.id === cid) {
+                            // return item.name; // 注意，这里直接return不起作用
+                            result = item.name;
+                        }
+                    });
+                    return result;
+                }else {
+                    return null;
+                }
+            };
 
             onMounted(() => {
                 handleQueryCategory();  //在初始化的时候把所有的分类查出来
@@ -302,16 +319,16 @@
                 columns,
                 loading,
                 handleTableChange,
+                handleQuery,
+                getCategoryName,
 
                 edit,
                 add,
-
 
                 ebook,
                 modalVisible,
                 modalLoading,
                 handleModalOk,
-                handleQuery,
                 categoryIds,
                 level1,
 
