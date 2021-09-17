@@ -92,6 +92,7 @@
     import {defineComponent, onMounted, ref} from 'vue';
     import axios from 'axios';
     import {message} from "ant-design-vue";
+    import {Tool} from "@/util/tool";
 
     export default defineComponent({
         name: 'AdminEbook',
@@ -220,8 +221,7 @@
              */
             const edit = (record: any) => {
                 modalVisible.value = true;  //显示模糊框
-                ebook.value = record;   //从record响应式变量中获取数据填充到模糊框
-                console.log("这是我在测试数据：" + record.id)
+                ebook.value = Tool.copy(record);   //从record响应式变量中先复制对象再填充获取数据填充到模糊框
             };
 
             /**
