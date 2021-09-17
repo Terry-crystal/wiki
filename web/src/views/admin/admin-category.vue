@@ -7,7 +7,7 @@
             <p>
                 <a-form layout="inline" :model="param">
                     <a-form-item>
-                        <a-input v-model:value="param.name" placeholder="输入要查询的书籍"></a-input>
+                        <a-input v-model:value="param.name" placeholder="名称"></a-input>
                     </a-form-item>
 
                     <a-form-item>
@@ -29,7 +29,7 @@
             <a-table
                     :columns="columns"
                     :row-key="record => record.id"
-                    :data-source="ebooks"
+                    :data-source="categorys"
                     :pagination="pagination"
                     :loading="loading"
                     @change="handleTableChange"
@@ -45,10 +45,10 @@
                         </a-button>
 
                         <a-popconfirm
-                                title="shjdasad？"
+                                title="删除后不可恢复，确认删除？"
                                 ok-text="是"
                                 cancel-text="否"
-                                @confirm="handleEbookDelete(record.id)"
+                                @confirm="handleCategoryDelete(record.id)"
                         >
                             <a-button type="danger">删除</a-button>
                         </a-popconfirm>
@@ -60,27 +60,21 @@
     </a-layout>
 
     <a-modal
-            title="电子书表单"
+            title="分类表单"
             v-model:visible="modalVisible"
             :confirm-loading="modalLoading"
             @ok="handleModalOk"
     >
 
-        <a-form :model="ebook" :label-col="{ span: 6 }" :wrapper-col="{ span: 18 }">
-            <a-form-item label="封面">
-                <a-input v-model:value="ebook.cover"/>
-            </a-form-item>
+        <a-form :model="category" :label-col="{ span: 6 }" :wrapper-col="{ span: 18 }">
             <a-form-item label="名称">
-                <a-input v-model:value="ebook.name"/>
+                <a-input v-model:value="category.name"/>
             </a-form-item>
-            <a-form-item label="分类一">
-                <a-input v-model:value="ebook.category1Id"/>
+            <a-form-item label="父分类">
+                <a-input v-model:value="category.parent"/>
             </a-form-item>
-            <a-form-item label="分类二">
-                <a-input v-model:value="ebook.category2Id"/>
-            </a-form-item>
-            <a-form-item label="描述">
-                <a-input v-model:value="ebook.description" type="textarea"/>
+            <a-form-item label="顺序">
+                <a-input v-model:value="category.sort"/>
             </a-form-item>
         </a-form>
 
@@ -95,12 +89,12 @@
     import {Tool} from "@/util/tool";
 
     export default defineComponent({
-        name: 'AdminEbook',
+        name: 'AdminCategory',
         setup() {
 
             const param = ref();    //设置响应式变量
             param.value = {};   //初始化给个空对象
-            const ebooks = ref();
+            const categorys = ref();
             const pagination = ref({
                 current: 1,
                 pageSize: 10,
@@ -110,34 +104,17 @@
 
             const columns = [
                 {
-                    title: '封面',
-                    dataIndex: 'cover',
-                    slots: {customRender: 'cover'}
-                },
-                {
                     title: '名称',
                     dataIndex: 'name'
                 },
                 {
-                    title: '分类一',
-                    key: 'category1Id',
-                    dataIndex: 'category1Id'
+                    title: '父分类',
+                    key: 'parent',
+                    dataIndex: 'parent'
                 },
                 {
-                    title: '分类二',
-                    dataIndex: 'category2Id'
-                },
-                {
-                    title: '文档数',
-                    dataIndex: 'docCount'
-                },
-                {
-                    title: '阅读数',
-                    dataIndex: 'viewCount'
-                },
-                {
-                    title: '点赞数',
-                    dataIndex: 'voteCount'
+                    title: '顺序',
+                    dataIndex: 'sort'
                 },
                 {
                     title: 'Action',
@@ -151,7 +128,7 @@
              **/
             const handleQuery = (params: any) => {
                 loading.value = true;
-                axios.get("/ebook/list", {
+                axios.get("/category/list", {
                     params: {
                         page: params.page,
                         size: params.size,
@@ -161,7 +138,7 @@
                     loading.value = false;
                     const data = response.data;
                     if (data.success) {
-                        ebooks.value = data.content.list;
+                        categorys.value = data.content.list;
 
                         // 重置分页按钮
                         pagination.value.current = params.page;
@@ -191,14 +168,14 @@
             });
 
             // -------- 表单 ---------
-            const ebook = ref({});
+            const category = ref({});
             const modalVisible = ref(false);
             const modalLoading = ref(false);
             const handleModalOk = () => {
                 modalLoading.value = true;  //在保存的时候先显示一个保存的效果
 
-                //在对编辑好的电子书信息进行保存,发保存请求
-                axios.post("/ebook/save", ebook.value).then((response) => {
+                //在对编辑好的分类信息进行保存,发保存请求
+                axios.post("/category/save", category.value).then((response) => {
                     modalLoading.value = false; //只要后端有返回，就把效果去掉
 
                     const data = response.data;//data=CommonResp
@@ -221,7 +198,7 @@
              */
             const edit = (record: any) => {
                 modalVisible.value = true;  //显示模糊框
-                ebook.value = Tool.copy(record);   //从record响应式变量中先复制对象再填充获取数据填充到模糊框
+                category.value = Tool.copy(record);   //从record响应式变量中先复制对象再填充获取数据填充到模糊框
             };
 
             /**
@@ -229,14 +206,14 @@
              */
             const add = () => {
                 modalVisible.value = true;  //显示模糊框
-                ebook.value = {};   //将模糊框内部数据清空
+                category.value = {};   //将模糊框内部数据清空
             };
 
             /**
              * 删除
              */
-            const handleEbookDelete = (id: string) => {   //Long类型对应前端类型为number类型
-                axios.delete("/ebook/delete/" + id).then((response) => {
+            const handleCategoryDelete = (id: string) => {   //Long类型对应前端类型为number类型
+                axios.delete("/category/delete/" + id).then((response) => {
                     const data = response.data;//data=CommonResp
                     if (data.success) {
                         //重新加载列表
@@ -257,7 +234,7 @@
 
             return {
                 param,
-                ebooks,
+                categorys,
                 pagination,
                 columns,
                 loading,
@@ -265,9 +242,9 @@
 
                 edit,
                 add,
-                handleEbookDelete,
+                handleCategoryDelete,
 
-                ebook,
+                category,
                 modalVisible,
                 modalLoading,
                 handleModalOk,
