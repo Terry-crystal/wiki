@@ -41,6 +41,7 @@ public class CategoryService {
 
         CategoryExample categoryExample = new CategoryExample();
         CategoryExample.Criteria criteria = categoryExample.createCriteria(); //以上两行为固定写法
+        categoryExample.setOrderByClause("sort asc");   //设置排序 按顺序asc
 
         PageHelper.startPage(req.getPage(), req.getSize());  //实现后端分页功能，集成插件即可
         //但是使用这个类，只对一个select语句有作用，如果有多条select语句则会失效
@@ -65,6 +66,20 @@ public class CategoryService {
         pageResp.setList(respList);
 
         return pageResp;
+    }
+
+    /**
+     * 一次性查出所有的分类数据
+     *
+     * @return 返回装有分类数据的list
+     */
+    public List<CategoryQueryResp> all() {
+        CategoryExample categoryExample = new CategoryExample();
+        categoryExample.setOrderByClause("sort asc");   //设置排序 按顺序asc
+        List<Category> categoryList = categoryMapper.selectByExample(categoryExample);
+        //列表复制
+        List<CategoryQueryResp> respList = CopyUtil.copyList(categoryList, CategoryQueryResp.class);
+        return respList;
     }
 
     /**

@@ -2,14 +2,15 @@ package com.example.wiki.controller;
 
 import com.example.wiki.req.CategoryQueryReq;
 import com.example.wiki.req.CategorySaveReq;
-import com.example.wiki.resp.CommonResp;
 import com.example.wiki.resp.CategoryQueryResp;
+import com.example.wiki.resp.CommonResp;
 import com.example.wiki.resp.PageResp;
 import com.example.wiki.service.CategoryService;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.validation.Valid;
+import java.util.List;
 
 /**
  * @author Crystal
@@ -33,6 +34,19 @@ public class CategoryController {
     public CommonResp list(@Valid CategoryQueryReq req) {
         CommonResp<PageResp<CategoryQueryResp>> resp = new CommonResp<>();
         PageResp<CategoryQueryResp> list = categoryService.list(req);
+        resp.setContent(list);
+        return resp;
+    }
+
+    /**
+     * 一次性将所有分类数据抽取出来，不需要进行分页的处理
+     *
+     * @return 返回装有分类数据的list
+     */
+    @GetMapping("/all")
+    public CommonResp all() {
+        CommonResp<List<CategoryQueryResp>> resp = new CommonResp<>();
+        List<CategoryQueryResp> list = categoryService.all();
         resp.setContent(list);
         return resp;
     }
