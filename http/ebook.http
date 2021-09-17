@@ -1,6 +1,6 @@
 ###
 
-GET http://localhost:8081/ebook/list
+GET http://localhost:8081/ebook/list?page1&size=1001
 
 ###
 
