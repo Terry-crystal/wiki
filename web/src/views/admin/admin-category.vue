@@ -8,16 +8,12 @@
                 <a-form layout="inline" :model="param">
 
                     <a-form-item>
-                        <a-input v-model:value="param.name" placeholder="名称"></a-input>
-                    </a-form-item>
-
-                    <a-form-item>
-                        <a-button type="primary" @click="handleQuery()">查询
-                        </a-button>
-                    </a-form-item>
-
-                    <a-form-item>
                         <a-button type="primary" @click="add()">新增</a-button>
+                    </a-form-item>
+
+                    <a-form-item>
+                        <a-button type="primary" @click="handleQuery()">刷新查询
+                        </a-button>
                     </a-form-item>
 
                 </a-form>
@@ -27,7 +23,7 @@
             <a-table
                     :columns="columns"
                     :row-key="record => record.id"
-                    :data-source="categorys"
+                    :data-source="level1"
                     :loading="loading"
                     :pagination="false"
             >
@@ -94,6 +90,7 @@
             const categorys = ref();
             const loading = ref(false);
 
+
             const columns = [
                 {
                     title: '名称',
@@ -116,6 +113,19 @@
             ];
 
             /**
+             * 一级分类树，children属性就是二级分类
+             * [{
+             *   id: "",
+             *   name: "",
+             *   children: [{
+             *     id: "",
+             *     name: "",
+             *   }]
+             * }]
+             */
+            const level1 = ref();
+
+            /**
              * 数据查询
              **/
             const handleQuery = () => {
@@ -125,6 +135,10 @@
                     const data = response.data;
                     if (data.success) {
                         categorys.value = data.content;
+                        console.log("原始数据：", categorys.value);
+                        level1.value = [];
+                        level1.value = Tool.array2Tree(categorys.value, 0);
+                        console.log("树形结构：", level1);
                     } else {
                         message.error(data.message);
                     }
@@ -192,7 +206,8 @@
 
             return {
                 param,
-                categorys,
+                //categorys,
+                level1,
                 columns,
                 loading,
 
