@@ -157,6 +157,7 @@
              **/
             const handleQuery = (params: any) => {
                 loading.value = true;
+                ebooks.value=[];    //清空现有数据，就不会出现编辑之后还是原来数据的清空
                 axios.get("/ebook/list", {
                     params: {
                         page: params.page,
