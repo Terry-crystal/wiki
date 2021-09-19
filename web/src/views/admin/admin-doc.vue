@@ -64,18 +64,19 @@
             <a-form-item label="名称">
                 <a-input v-model:value="doc.name"/>
             </a-form-item>
+
             <a-form-item label="父文档">
-                <a-select
-                        ref="select"
+                <!--replaceFileds 替换treeNode中title，value，key，children字段为treeData中的字段-->
+                <a-tree-select
                         v-model:value="doc.parent"
+                        style="width: 100%"
+                        :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
+                        :tree-data="treeSelectData"
+                        placeholder="请选择父文档"
+                        tree-default-expand-all
+                        :replaceFields="{title:'name',key:'id',value:'id'}"
                 >
-                    <a-select-option value="0">无</a-select-option>
-                    <!--在属性中使用变量，直接使用就可以了-->
-                    <a-select-option v-for="c in level1" :key="c.id" :value="c.id" :disabled="doc.id === c.id">
-                        <!--选项和自身一样的情况下不能选-->
-                        {{c.name}}  <!--在节点中使用变量，需要使用两个大括号-->
-                    </a-select-option>
-                </a-select>
+                </a-tree-select>
             </a-form-item>
             <a-form-item label="顺序">
                 <a-input v-model:value="doc.sort"/>
@@ -141,6 +142,7 @@
              **/
             const handleQuery = () => {
                 loading.value = true;
+                level1.value = [];  //把表格数据清空
                 axios.get("/doc/all").then((response) => {
                     loading.value = false;
                     const data = response.data;
@@ -159,6 +161,11 @@
             });
 
             // -------- 表单 ---------
+
+            //因为树选择组件的属性状态，会随当前编辑的节点而变化，所以单独声明一个响应式变量
+            const treeSelectData = ref();
+            treeSelectData.value = [];
+
             const doc = ref({});
             const modalVisible = ref(false);
             const modalLoading = ref(false);
@@ -181,11 +188,50 @@
             };
 
             /**
+             * 将某节点及其子孙节点全部置为disabled
+             */
+            const setDisable = (treeSelectData: any, id: any) => {
+                // console.log(treeSelectData, id);
+                // 遍历数组，即遍历某一层节点
+                for (let i = 0; i < treeSelectData.length; i++) {
+                    const node = treeSelectData[i];
+                    if (node.id === id) {
+                        // 如果当前节点就是目标节点
+                        console.log("disabled", node);
+                        // 将目标节点设置为disabled
+                        node.disabled = true;
+
+                        // 遍历所有子节点，将所有子节点全部都加上disabled
+                        const children = node.children;
+                        if (Tool.isNotEmpty(children)) {
+                            for (let j = 0; j < children.length; j++) {
+                                setDisable(children, children[j].id)
+                            }
+                        }
+                    } else {
+                        // 如果当前节点不是目标节点，则到其子节点再找找看。
+                        const children = node.children;
+                        if (Tool.isNotEmpty(children)) {
+                            setDisable(children, id);
+                        }
+                    }
+                }
+            };
+
+
+            /**
              * 编辑
              */
             const edit = (record: any) => {
                 modalVisible.value = true;  //显示模糊框
                 doc.value = Tool.copy(record);   //从record响应式变量中先复制对象再填充获取数据填充到模糊框
+
+                // 不能选择当前节点及其所有子孙节点，作为父节点，会使树断开
+                treeSelectData.value = Tool.copy(level1.value);
+                setDisable(treeSelectData.value, record.id);    //将对应节点下属性隐藏，达到不可编辑的状态
+
+                // 为选择树添加一个"无"
+                treeSelectData.value.unshift({id: 0, name: '无'});   //往数组的前面添加一个这样的节点
             };
 
             /**
@@ -194,6 +240,10 @@
             const add = () => {
                 modalVisible.value = true;  //显示模糊框
                 doc.value = {};   //将模糊框内部数据清空
+
+                treeSelectData.value = Tool.copy(level1.value);
+                // 为选择树添加一个"无"
+                treeSelectData.value.unshift({id: 0, name: '无'});
             };
 
             /**
@@ -227,7 +277,8 @@
                 modalVisible,
                 modalLoading,
                 handleModalOk,
-                handleQuery
+                handleQuery,
+                treeSelectData
             };
         }
     });

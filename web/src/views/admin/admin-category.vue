@@ -141,6 +141,7 @@
              **/
             const handleQuery = () => {
                 loading.value = true;
+                level1.value = [];  //在查询之前应该把数据清空
                 axios.get("/category/all").then((response) => {
                     loading.value = false;
                     const data = response.data;
