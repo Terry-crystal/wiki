@@ -18,7 +18,7 @@
                         <span>{{item.name}}</span>
                     </template>
                     <a-menu-item v-for="child in item.children" :key="child.id">
-                        <TagsOutlined />
+                        <TagsOutlined/>
                         <span>{{child.name}}</span>
                     </a-menu-item>
                 </a-sub-menu>

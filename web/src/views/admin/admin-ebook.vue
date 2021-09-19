@@ -157,7 +157,7 @@
              **/
             const handleQuery = (params: any) => {
                 loading.value = true;
-                ebooks.value=[];    //清空现有数据，就不会出现编辑之后还是原来数据的清空
+                ebooks.value = [];    //清空现有数据，就不会出现编辑之后还是原来数据的清空
                 axios.get("/ebook/list", {
                     params: {
                         page: params.page,
@@ -278,6 +278,12 @@
                         categorys = data.content;
                         level1.value = [];
                         level1.value = Tool.array2Tree(categorys, 0);
+
+                        //记载分类后，再加载电子书，否则如果分类树加载很慢，则电子书渲染会报错
+                        handleQuery({
+                            page: 1,
+                            size: pagination.value.pageSize,
+                        });
                     } else {
                         message.error(data.message);
                     }
@@ -291,26 +297,18 @@
              */
             const getCategoryName = (cid: number) => {
                 // console.log("这是："+cid)
-                if (categorys!=null){
-                    let result = "";
-                    categorys.forEach((item: any) => {
-                        if (item.id === cid) {
-                            // return item.name; // 注意，这里直接return不起作用
-                            result = item.name;
-                        }
-                    });
-                    return result;
-                }else {
-                    return null;
-                }
+                let result = "";
+                categorys.forEach((item: any) => {
+                    if (item.id === cid) {
+                        // return item.name; // 注意，这里直接return不起作用
+                        result = item.name;
+                    }
+                });
+                return result;
             };
 
             onMounted(() => {
                 handleQueryCategory();  //在初始化的时候把所有的分类查出来
-                handleQuery({
-                    page: 1,
-                    size: pagination.value.pageSize,
-                });
             });
 
             return {
