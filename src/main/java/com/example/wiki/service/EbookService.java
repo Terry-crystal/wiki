@@ -45,6 +45,9 @@ public class EbookService {
         if (!ObjectUtils.isEmpty(req.getName())) {
             criteria.andNameLike("%" + req.getName() + "%");    //已经封装好了模糊查询的算法，只需要确认是左查询还是右查询
         }
+        if (!ObjectUtils.isEmpty(req.getCategoryId2())) {
+            criteria.andCategory2IdEqualTo(req.getCategoryId2());
+        }
         PageHelper.startPage(req.getPage(), req.getSize());  //实现后端分页功能，集成插件即可
         //但是使用这个类，只对一个select语句有作用，如果有多条select语句则会失效
         List<Ebook> ebookList = ebookMapper.selectByExample(ebookExample);

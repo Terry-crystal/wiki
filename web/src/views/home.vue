@@ -87,6 +87,20 @@
             console.log("setup");
             const ebooks = ref();   //这个是一个响应式的数据！
             const isShowWelcome = ref(true);  //用于判断显示欢迎页面还是列表展示页面,初始默认为true，welcome界面
+            let categoryId2 = 0;   //用于获取二级分类类型便于发送分类查询请求的中间介质变量
+
+            const handleQueryebook = () => {
+                axios.get("/ebook/list", {
+                    params: {
+                        page: 1,
+                        size: 1000, //一次性将所有的数据全都查出来
+                        categoryId2: categoryId2
+                    }
+                }).then((response) => {
+                    const data = response.data; //此data就是后端中的commonResp
+                    ebooks.value = data.content.list;
+                });
+            }
 
             /**
              * 一级分类树，children属性就是二级分类
@@ -118,26 +132,18 @@
             };
 
             const handleClick = (value: any) => {
-                /* if (value.key === 'welcome') {
-                     isShowWelcome.value = true;
-                 } else {
-                     isShowWelcome.value = false;
-                 }这个是下面的简单写法，使用idea生成*/
-                isShowWelcome.value = value.key === 'welcome';
+                if (value.key === 'welcome') {
+                    isShowWelcome.value = true;
+                } else {
+                    categoryId2 = value.key;
+                    isShowWelcome.value = false;
+                    handleQueryebook();
+                }
             }
 
             //生命周期初始化方法
             onMounted(() => {
                 handleQueryCategory();
-                axios.get("/ebook/list", {
-                    params: {
-                        page: 1,
-                        size: 1000  //一次性将所有的数据全都查出来
-                    }
-                }).then((response) => {
-                    const data = response.data; //此data就是后端中的commonResp
-                    ebooks.value = data.content.list;
-                });
             });
 
             const pagination = {
