@@ -7,10 +7,8 @@
                     @click="handleClick"
             >
                 <a-menu-item key="welcome">
-                    <router-link :to="'/'">
-                        <MailOutlined/>
-                        <span>电子书分类栏</span>
-                    </router-link>
+                    <BankOutlined/>
+                    <span>欢迎</span>
                 </a-menu-item>
 
                 <a-sub-menu v-for="item in level1" :key="item.id">
@@ -32,7 +30,11 @@
                 :style="{ background: '#FFF', padding: '24px', margin: 0, minHeight: '280px' }"
         >
 
-            <a-list item-layout="vertical" size="large"
+            <div class="welcome" v-show="isShowWelcome">
+                <h1>欢迎使用伞兵知识库</h1>
+            </div>
+
+            <a-list item-layout="vertical" size="large" v-show="!isShowWelcome"
                     :grid="{ gutter: 20, column: 3 }"
                     :loading="loading"
                     :data-source="ebooks">
@@ -84,7 +86,7 @@
         setup() {
             console.log("setup");
             const ebooks = ref();   //这个是一个响应式的数据！
-
+            const isShowWelcome = ref(true);  //用于判断显示欢迎页面还是列表展示页面,初始默认为true，welcome界面
 
             /**
              * 一级分类树，children属性就是二级分类
@@ -115,8 +117,13 @@
                 });
             };
 
-            const handleClick = () => {
-                console.log("menu click")
+            const handleClick = (value: any) => {
+                /* if (value.key === 'welcome') {
+                     isShowWelcome.value = true;
+                 } else {
+                     isShowWelcome.value = false;
+                 }这个是下面的简单写法，使用idea生成*/
+                isShowWelcome.value = value.key === 'welcome';
             }
 
             //生命周期初始化方法
@@ -150,7 +157,8 @@
                 pagination,
                 actions,
                 handleClick,
-                level1
+                level1,
+                isShowWelcome
             }
         }
     });
