@@ -4,8 +4,7 @@
                 :style="{ background: '#fff', padding: '24px', margin: 0, minHeight: '280px' }"
         >
 
-            <a-row>
-
+            <a-row :gutter="24">
                 <a-col :span="8">
                     <p>
                         <a-form layout="inline" :model="param">
@@ -28,15 +27,17 @@
                             :data-source="level1"
                             :loading="loading"
                             :pagination="false"
+                            size="small"
                     >
-                        <template #cover="{ text: cover }">
-                            <img v-if="cover" :src="cover" alt="avatar"/>
+
+                        <template #name="{ text, record }">
+                            {{record.sort}} {{text}}
                         </template>
 
                         <template v-slot:action="{ text, record }">
                             <a-space size="small">
 
-                                <a-button type="primary" @click="edit(record)">
+                                <a-button type="primary" @click="edit(record)" size="small">
                                     编辑
                                 </a-button>
 
@@ -46,7 +47,7 @@
                                         cancel-text="否"
                                         @confirm="handleDocDelete(record.id)"
                                 >
-                                    <a-button type="danger">删除</a-button>
+                                    <a-button type="danger" size="small">删除</a-button>
                                 </a-popconfirm>
 
                             </a-space>
@@ -55,12 +56,22 @@
                 </a-col>
 
                 <a-col :span="16">
-                    <a-form :model="doc" :label-col="{ span: 6 }" :wrapper-col="{ span: 18 }">
-                        <a-form-item label="名称">
-                            <a-input v-model:value="doc.name"/>
+                    <p>
+                        <a-form layout="inline" :model="param">
+                            <a-form-item>
+                                <a-button type="primary" @click="handleSave()">
+                                    保存
+                                </a-button>
+                            </a-form-item>
+                        </a-form>
+                    </p>
+
+                    <a-form :model="doc" layout="vertical">
+                        <a-form-item>
+                            <a-input v-model:value="doc.name" placeholder="名称"/>
                         </a-form-item>
 
-                        <a-form-item label="父文档">
+                        <a-form-item>
                             <!--replaceFileds 替换treeNode中title，value，key，children字段为treeData中的字段-->
                             <a-tree-select
                                     v-model:value="doc.parent"
@@ -74,11 +85,11 @@
                             </a-tree-select>
                         </a-form-item>
 
-                        <a-form-item label="顺序">
-                            <a-input v-model:value="doc.sort"/>
+                        <a-form-item>
+                            <a-input v-model:value="doc.sort" placeholder="顺序"/>
                         </a-form-item>
 
-                        <a-form-item label="内容">
+                        <a-form-item>
                             <div id="content"></div>
                         </a-form-item>
 
@@ -124,16 +135,8 @@
             const columns = [
                 {
                     title: '名称',
-                    dataIndex: 'name'
-                },
-                {
-                    title: '父文档',
-                    key: 'parent',
-                    dataIndex: 'parent'
-                },
-                {
-                    title: '顺序',
-                    dataIndex: 'sort'
+                    dataIndex: 'name',
+                    slots: {customRender: 'name'}
                 },
                 {
                     title: 'Action',
@@ -189,8 +192,9 @@
             const modalLoading = ref(false);
 
             const editor = new E('#content');
+            editor.config.zIndex = 0;
 
-            const handleModalOk = () => {
+            const handleSave = () => {
                 modalLoading.value = true;  //在保存的时候先显示一个保存的效果
 
                 //在对编辑好的文档信息进行保存,发保存请求
@@ -289,10 +293,6 @@
 
                 // 为选择树添加一个"无"
                 treeSelectData.value.unshift({id: 0, name: '无'});   //往数组的前面添加一个这样的节点
-
-                setTimeout(function () {
-                    editor.create(); //富文本应该在modal渲染之后才创建渲染
-                }, 100)
             };
 
             /**
@@ -307,10 +307,6 @@
                 treeSelectData.value = Tool.copy(level1.value);
                 // 为选择树添加一个"无"
                 treeSelectData.value.unshift({id: 0, name: '无'});
-
-                setTimeout(function () {
-                    editor.create(); //富文本应该在modal渲染之后才创建渲染
-                }, 100)
             };
 
             /**
@@ -340,6 +336,7 @@
 
             onMounted(() => {
                 handleQuery();
+                editor.create();
             });
 
             return {
@@ -355,7 +352,7 @@
                 doc,
                 modalVisible,
                 modalLoading,
-                handleModalOk,
+                handleSave,
                 handleQuery,
                 treeSelectData
             };
