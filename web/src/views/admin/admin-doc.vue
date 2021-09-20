@@ -22,12 +22,14 @@
                     </p>
 
                     <a-table
+                            v-if="level1.length>0"
                             :columns="columns"
                             :row-key="record => record.id"
                             :data-source="level1"
                             :loading="loading"
                             :pagination="false"
                             size="small"
+                            :default-expand-all-rows="true"
                     >
 
                         <template #name="{ text, record }">
@@ -157,6 +159,7 @@
              * }]
              */
             const level1 = ref();
+            level1.value = [];
 
             /**
              * 数据查询
