@@ -2,8 +2,8 @@ package com.example.wiki.controller;
 
 import com.example.wiki.req.DocQueryReq;
 import com.example.wiki.req.DocSaveReq;
-import com.example.wiki.resp.DocQueryResp;
 import com.example.wiki.resp.CommonResp;
+import com.example.wiki.resp.DocQueryResp;
 import com.example.wiki.resp.PageResp;
 import com.example.wiki.service.DocService;
 import org.springframework.web.bind.annotation.*;

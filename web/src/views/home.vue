@@ -78,8 +78,8 @@
 <script lang="ts">
     import {defineComponent, onMounted, ref} from 'vue';
     import axios from 'axios';
-    import {Tool} from "@/util/tool";
     import {message} from "ant-design-vue";
+    import {Tool} from "@/util/tool";
 
     export default defineComponent({
         name: 'Home',
@@ -100,7 +100,7 @@
                     const data = response.data; //此data就是后端中的commonResp
                     ebooks.value = data.content.list;
                 });
-            }
+            };
 
             /**
              * 一级分类树，children属性就是二级分类
@@ -139,7 +139,7 @@
                     isShowWelcome.value = false;
                     handleQueryebook();
                 }
-            }
+            };
 
             //生命周期初始化方法
             onMounted(() => {

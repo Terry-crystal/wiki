@@ -92,11 +92,13 @@
     import axios from 'axios';
     import {message} from "ant-design-vue";
     import {Tool} from "@/util/tool";
+    import {useRoute} from "vue-router";
 
     export default defineComponent({
         name: 'AdminDoc',
         setup() {
 
+            const route = useRoute(); //使用内置方法可以得到route并且使用其得到路由的各种信息
             const param = ref();    //设置响应式变量
             param.value = {};   //初始化给个空对象
             const docs = ref();
@@ -239,7 +241,9 @@
              */
             const add = () => {
                 modalVisible.value = true;  //显示模糊框
-                doc.value = {};   //将模糊框内部数据清空
+                doc.value = {
+                    ebookId: route.query.ebookId
+                }; //获取前面页面传递过来的参数并且将其赋值到表单的数据源中
 
                 treeSelectData.value = Tool.copy(level1.value);
                 // 为选择树添加一个"无"

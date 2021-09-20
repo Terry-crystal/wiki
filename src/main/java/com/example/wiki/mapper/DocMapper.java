@@ -2,8 +2,9 @@ package com.example.wiki.mapper;
 
 import com.example.wiki.domain.Doc;
 import com.example.wiki.domain.DocExample;
-import java.util.List;
 import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 public interface DocMapper {
     long countByExample(DocExample example);

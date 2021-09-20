@@ -29,7 +29,7 @@ const routes: Array<RouteRecordRaw> = [
         path: '/admin/category',
         name: 'AdminCategory',
         component: AdminCategory
-    },{
+    }, {
         path: '/admin/doc',
         name: 'Admindoc',
         component: AdminDoc
