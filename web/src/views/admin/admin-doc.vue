@@ -78,9 +78,15 @@
                 >
                 </a-tree-select>
             </a-form-item>
+
             <a-form-item label="顺序">
                 <a-input v-model:value="doc.sort"/>
             </a-form-item>
+
+            <a-form-item label="内容">
+                <div id="content"></div>
+            </a-form-item>
+
         </a-form>
 
     </a-modal>
@@ -91,9 +97,10 @@
     import {createVNode, defineComponent, onMounted, ref} from 'vue';
     import axios from 'axios';
     import {message, Modal} from "ant-design-vue";
-    import {Tool} from "@/util/tool";
     import {useRoute} from "vue-router";
     import ExclamationCircleOutlined from "@ant-design/icons-vue/ExclamationCircleOutlined";
+    import E from 'wangeditor'
+    import {Tool} from "@/util/tool";
 
 
     export default defineComponent({
@@ -173,6 +180,9 @@
             const doc = ref({});
             const modalVisible = ref(false);
             const modalLoading = ref(false);
+
+            const editor = new E('#content');
+
             const handleModalOk = () => {
                 modalLoading.value = true;  //在保存的时候先显示一个保存的效果
 
@@ -272,6 +282,10 @@
 
                 // 为选择树添加一个"无"
                 treeSelectData.value.unshift({id: 0, name: '无'});   //往数组的前面添加一个这样的节点
+
+                setTimeout(function () {
+                    editor.create(); //富文本应该在modal渲染之后才创建渲染
+                }, 100)
             };
 
             /**
@@ -286,6 +300,10 @@
                 treeSelectData.value = Tool.copy(level1.value);
                 // 为选择树添加一个"无"
                 treeSelectData.value.unshift({id: 0, name: '无'});
+
+                setTimeout(function () {
+                    editor.create(); //富文本应该在modal渲染之后才创建渲染
+                }, 100)
             };
 
             /**
