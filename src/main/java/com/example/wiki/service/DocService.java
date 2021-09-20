@@ -69,9 +69,9 @@ public class DocService {
     }
 
     /**
-     * 一次性查出所有的分类数据
+     * 一次性查出所有的文档数据
      *
-     * @return 返回装有分类数据的list
+     * @return 返回装有文档数据的list
      */
     public List<DocQueryResp> all() {
         DocExample docExample = new DocExample();
@@ -83,7 +83,7 @@ public class DocService {
     }
 
     /**
-     * 保存分类功能 可以是编辑的保存也可以是新增的保存
+     * 保存文档功能 可以是编辑的保存也可以是新增的保存
      */
     public void save(DocSaveReq req) {
         Doc doc = CopyUtil.copy(req, Doc.class);  //将请求参数变成我们的实体
@@ -99,12 +99,24 @@ public class DocService {
     }
 
     /**
-     * 使用id对某一分类进行删除
+     * 使用id对某一文档进行删除
      *
      * @param id
      */
     public void delete(Long id) {
         docMapper.deleteByPrimaryKey(id);
+    }
+
+    /**
+     * 使用数组id对某一文档进行删除
+     *
+     * @param ids
+     */
+    public void delete(List<String> ids) {
+        DocExample docExample = new DocExample();
+        DocExample.Criteria criteria = docExample.createCriteria(); //以上两行为固定写法
+        criteria.andIdIn(ids);  //通过一个id list来删除数据
+        docMapper.deleteByExample(docExample);
     }
 
 }
