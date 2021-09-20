@@ -88,11 +88,13 @@
 </template>
 
 <script lang="ts">
-    import {defineComponent, onMounted, ref} from 'vue';
+    import {createVNode, defineComponent, onMounted, ref} from 'vue';
     import axios from 'axios';
-    import {message} from "ant-design-vue";
+    import {message, Modal} from "ant-design-vue";
     import {Tool} from "@/util/tool";
     import {useRoute} from "vue-router";
+    import ExclamationCircleOutlined from "@ant-design/icons-vue/ExclamationCircleOutlined";
+
 
     export default defineComponent({
         name: 'AdminDoc',
@@ -221,7 +223,9 @@
             };
 
 
-            const ids: Array<string> = [];
+            const deleteIds: Array<string> = [];
+            const deleteNames: Array<string> = [];
+
             /**
              * 查找整根树枝
              */
@@ -234,7 +238,8 @@
                         // 如果当前节点就是目标节点
                         console.log("delete", node);
                         // 将目标节点放入结果集
-                        ids.push(id);
+                        deleteIds.push(id);
+                        deleteNames.push(node.name);
 
                         // 遍历所有子节点
                         const children = node.children;
@@ -284,17 +289,27 @@
             };
 
             /**
-             * 删除s
+             * 删除
              */
             const handleDocDelete = (id: string) => {
                 //Long类型对应前端类型为number类型
+                // 清空数组，否则多次删除时，数组会一直增加
+                deleteIds.length = 0;
+                deleteNames.length = 0;
                 getDeleteIds(level1.value, id);
-                axios.delete("/doc/delete/" + ids.join(",")).then((response) => {
-                    const data = response.data;//data=CommonResp
-                    if (data.success) {
-                        //重新加载列表
-                        handleQuery();
-                    }
+                Modal.confirm({
+                    title: () => '重要提醒',
+                    icon: () => createVNode(ExclamationCircleOutlined),
+                    content: () => '将删除：【' + deleteNames.join("，") + "】删除后不可恢复，确认删除？",
+                    onOk() {
+                        axios.delete("/doc/delete/" + deleteIds.join(",")).then((response) => {
+                            const data = response.data; // data = commonResp
+                            if (data.success) {
+                                // 重新加载列表
+                                handleQuery();
+                            }
+                        });
+                    },
                 });
             };
 
