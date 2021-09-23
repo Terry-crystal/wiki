@@ -104,8 +104,8 @@ public class DocService {
         } else {
             //更新
             docMapper.updateByPrimaryKey(doc);
-            int count=contentMapper.updateByPrimaryKeyWithBLOBs(content);   //更新content表数据
-            if (count==0){
+            int count = contentMapper.updateByPrimaryKeyWithBLOBs(content);   //更新content表数据
+            if (count == 0) {
                 contentMapper.insert(content);  //插入content表数据
             }
         }
@@ -131,5 +131,15 @@ public class DocService {
         criteria.andIdIn(ids);  //通过一个id list来删除数据
         docMapper.deleteByExample(docExample);
     }
+
+
+    public String findContent(Long id) {
+        Content content = contentMapper.selectByPrimaryKey(id);
+        if (content.getContent() != null) {
+            return content.getContent();
+        } else
+            return "数据库中无数据";
+    }
+
 
 }

@@ -284,13 +284,14 @@
                 }
             };
 
-
             /**
              * 编辑
              */
             const edit = (record: any) => {
                 modalVisible.value = true;  //显示模糊框
                 doc.value = Tool.copy(record);   //从record响应式变量中先复制对象再填充获取数据填充到模糊框
+
+                handleQueryContent();   //得到doc.value有值了才去查询
 
                 // 不能选择当前节点及其所有子孙节点，作为父节点，会使树断开
                 treeSelectData.value = Tool.copy(level1.value);
@@ -336,6 +337,20 @@
                             }
                         });
                     },
+                });
+            };
+
+            /**
+             * 内容查询
+             **/
+            const handleQueryContent = () => {
+                axios.get("/doc/find-content/" + doc.value.id).then((response) => {
+                    const data = response.data;
+                    if (data.success) {
+                        editor.txt.html(data.content);
+                    } else {
+                        message.error(data.message);
+                    }
                 });
             };
 
