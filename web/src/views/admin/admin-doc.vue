@@ -190,7 +190,8 @@
             const treeSelectData = ref();
             treeSelectData.value = [];
 
-            const doc = ref({});
+            const doc = ref();
+            doc.value = {};
             const modalVisible = ref(false);
             const modalLoading = ref(false);
 
@@ -199,6 +200,7 @@
 
             const handleSave = () => {
                 modalLoading.value = true;  //在保存的时候先显示一个保存的效果
+                doc.value.content = editor.txt.html();   //获取富文本里面的内容
 
                 //在对编辑好的文档信息进行保存,发保存请求
                 axios.post("/doc/save", doc.value).then((response) => {

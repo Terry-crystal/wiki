@@ -1,7 +1,9 @@
 package com.example.wiki.service;
 
+import com.example.wiki.domain.Content;
 import com.example.wiki.domain.Doc;
 import com.example.wiki.domain.DocExample;
+import com.example.wiki.mapper.ContentMapper;
 import com.example.wiki.mapper.DocMapper;
 import com.example.wiki.req.DocQueryReq;
 import com.example.wiki.req.DocSaveReq;
@@ -32,6 +34,9 @@ public class DocService {
 
     @Resource
     private DocMapper docMapper;
+
+    @Resource
+    private ContentMapper contentMapper;
 
     @Resource
     private SnowFlake snowFlake;
@@ -87,14 +92,22 @@ public class DocService {
      */
     public void save(DocSaveReq req) {
         Doc doc = CopyUtil.copy(req, Doc.class);  //将请求参数变成我们的实体
+        Content content = CopyUtil.copy(req, Content.class);  //将请求参数变成我们的实体
         if (ObjectUtils.isEmpty(req.getId())) {
             //新增
             // 新增
             doc.setId(snowFlake.nextId());
             docMapper.insert(doc);
+
+            content.setId(doc.getId());
+            contentMapper.insert(content);
         } else {
             //更新
             docMapper.updateByPrimaryKey(doc);
+            int count=contentMapper.updateByPrimaryKeyWithBLOBs(content);   //更新content表数据
+            if (count==0){
+                contentMapper.insert(content);  //插入content表数据
+            }
         }
     }
 
