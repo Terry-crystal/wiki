@@ -192,7 +192,6 @@
 
             const doc = ref();
             doc.value = {};
-            const modalVisible = ref(false);
             const modalLoading = ref(false);
 
             const editor = new E('#content');
@@ -208,7 +207,8 @@
 
                     const data = response.data;//data=CommonResp
                     if (data.success) {
-                        modalVisible.value = false; //拿到结果之后才会取消loading效果
+                        message.success("保存成功！");
+
                         //重新加载列表
                         handleQuery();
                     } else {
@@ -288,9 +288,9 @@
              * 编辑
              */
             const edit = (record: any) => {
-                modalVisible.value = true;  //显示模糊框
-                doc.value = Tool.copy(record);   //从record响应式变量中先复制对象再填充获取数据填充到模糊框
+                editor.txt.html("");    //清空富文本框
 
+                doc.value = Tool.copy(record);   //从record响应式变量中先复制对象再填充获取数据填充到模糊框
                 handleQueryContent();   //得到doc.value有值了才去查询
 
                 // 不能选择当前节点及其所有子孙节点，作为父节点，会使树断开
@@ -305,7 +305,8 @@
              * 新增
              */
             const add = () => {
-                modalVisible.value = true;  //显示模糊框
+                editor.txt.html("");    //清空富文本框
+
                 doc.value = {
                     ebookId: route.query.ebookId
                 }; //获取前面页面传递过来的参数并且将其赋值到表单的数据源中
@@ -370,7 +371,6 @@
                 handleDocDelete,
 
                 doc,
-                modalVisible,
                 modalLoading,
                 handleSave,
                 handleQuery,
