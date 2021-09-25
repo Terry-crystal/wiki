@@ -167,7 +167,7 @@
             const handleQuery = () => {
                 loading.value = true;
                 level1.value = [];  //把表格数据清空
-                axios.get("/doc/all").then((response) => {
+                axios.get("/doc/all/" + route.query.ebookId).then((response) => {
                     loading.value = false;
                     const data = response.data;
                     if (data.success) {

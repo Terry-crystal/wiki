@@ -77,9 +77,25 @@ public class DocService {
      * 一次性查出所有的文档数据
      *
      * @return 返回装有文档数据的list
-     */
+     *//*
     public List<DocQueryResp> all() {
         DocExample docExample = new DocExample();
+        docExample.setOrderByClause("sort asc");   //设置排序 按顺序asc
+        List<Doc> docList = docMapper.selectByExample(docExample);
+        //列表复制
+        List<DocQueryResp> respList = CopyUtil.copyList(docList, DocQueryResp.class);
+        return respList;
+    }*/
+
+    /**
+     * 通过id查询对应的文档数据
+     *
+     * @param ebookId
+     * @return
+     */
+    public List<DocQueryResp> all(Long ebookId) {
+        DocExample docExample = new DocExample();
+        docExample.createCriteria().andEbookIdEqualTo(ebookId);
         docExample.setOrderByClause("sort asc");   //设置排序 按顺序asc
         List<Doc> docList = docMapper.selectByExample(docExample);
         //列表复制

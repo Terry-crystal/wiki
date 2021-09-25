@@ -39,15 +39,29 @@ public class DocController {
         return resp;
     }
 
+//    /**
+//     * 一次性将所有文档数据抽取出来，不需要进行分页的处理
+//     *
+//     * @return 返回装有文档数据的list
+//     */
+//    @GetMapping("/all")
+//    public CommonResp all() {
+//        CommonResp<List<DocQueryResp>> resp = new CommonResp<>();
+//        List<DocQueryResp> list = docService.all();
+//        resp.setContent(list);
+//        return resp;
+//    }
+
     /**
-     * 一次性将所有文档数据抽取出来，不需要进行分页的处理
+     * 通过id查询文档内容
      *
-     * @return 返回装有文档数据的list
+     * @param ebookId   文档的id
+     * @return  返回的内容
      */
-    @GetMapping("/all")
-    public CommonResp all() {
+    @GetMapping("/all/{ebookId}")
+    public CommonResp all(@PathVariable Long ebookId) {
         CommonResp<List<DocQueryResp>> resp = new CommonResp<>();
-        List<DocQueryResp> list = docService.all();
+        List<DocQueryResp> list = docService.all(ebookId);
         resp.setContent(list);
         return resp;
     }
