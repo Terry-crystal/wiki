@@ -92,13 +92,24 @@
                         </a-form-item>
 
                         <a-form-item>
+
+                            <a-button type="primary" @click="handlePreviewContent()">
+                                <EyeOutlined /> 内容预览
+                            </a-button>
+                        </a-form-item>
+
+                        <a-form-item>
                             <div id="content"></div>
                         </a-form-item>
 
                     </a-form>
                 </a-col>
-
             </a-row>
+
+            <!--抽屉-->
+            <a-drawer width="900" placement="right" :closable="false" :visible="drawerVisible" @close="onDrawerClose">
+                <div class="wangeditor" :innerHTML="previewHtml"></div>
+            </a-drawer>
 
         </a-layout-content>
     </a-layout>
@@ -132,6 +143,9 @@
             param.value = {};   //初始化给个空对象
             const docs = ref();
             const loading = ref(false);
+            //因为树选择组件的属性状态，会随当前编辑的节点而变化，所以单独声明一个响应式变量
+            const treeSelectData = ref();
+            treeSelectData.value = [];
 
 
             const columns = [
@@ -174,6 +188,12 @@
                         docs.value = data.content;
                         level1.value = [];
                         level1.value = Tool.array2Tree(docs.value, 0);
+
+                        //父文档下拉框初始化，相当于点击新增
+                        treeSelectData.value = Tool.copy(level1.value);
+                        //为选择树添加一个“无”
+                        treeSelectData.value.unshift({id: 0, name: '无'});
+
                     } else {
                         message.error(data.message);
                     }
@@ -185,13 +205,10 @@
             });
 
             // -------- 表单 ---------
-
-            //因为树选择组件的属性状态，会随当前编辑的节点而变化，所以单独声明一个响应式变量
-            const treeSelectData = ref();
-            treeSelectData.value = [];
-
             const doc = ref();
-            doc.value = {};
+            doc.value = {
+                ebookId: route.query.ebookId
+            };
             const modalLoading = ref(false);
 
             const editor = new E('#content');
@@ -310,10 +327,6 @@
                 doc.value = {
                     ebookId: route.query.ebookId
                 }; //获取前面页面传递过来的参数并且将其赋值到表单的数据源中
-
-                treeSelectData.value = Tool.copy(level1.value);
-                // 为选择树添加一个"无"
-                treeSelectData.value.unshift({id: 0, name: '无'});
             };
 
             /**
@@ -355,6 +368,19 @@
                 });
             };
 
+
+            // ----------------富文本预览--------------
+            const drawerVisible = ref(false);
+            const previewHtml = ref();
+            const handlePreviewContent = () => {
+                const html = editor.txt.html();
+                previewHtml.value = html;
+                drawerVisible.value = true;
+            };
+            const onDrawerClose = () => {
+                drawerVisible.value = false;
+            };
+
             onMounted(() => {
                 handleQuery();
                 editor.create();
@@ -374,7 +400,12 @@
                 modalLoading,
                 handleSave,
                 handleQuery,
-                treeSelectData
+                treeSelectData,
+
+                drawerVisible,
+                previewHtml,
+                handlePreviewContent,
+                onDrawerClose,
             };
         }
     });

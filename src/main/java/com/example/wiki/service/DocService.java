@@ -77,14 +77,13 @@ public class DocService {
      * 一次性查出所有的文档数据
      *
      * @return 返回装有文档数据的list
-     *//*
     public List<DocQueryResp> all() {
-        DocExample docExample = new DocExample();
-        docExample.setOrderByClause("sort asc");   //设置排序 按顺序asc
-        List<Doc> docList = docMapper.selectByExample(docExample);
-        //列表复制
-        List<DocQueryResp> respList = CopyUtil.copyList(docList, DocQueryResp.class);
-        return respList;
+    DocExample docExample = new DocExample();
+    docExample.setOrderByClause("sort asc");   //设置排序 按顺序asc
+    List<Doc> docList = docMapper.selectByExample(docExample);
+    //列表复制
+    List<DocQueryResp> respList = CopyUtil.copyList(docList, DocQueryResp.class);
+    return respList;
     }*/
 
     /**
@@ -151,10 +150,10 @@ public class DocService {
 
     public String findContent(Long id) {
         Content content = contentMapper.selectByPrimaryKey(id);
-        if (content.getContent() != null) {
-            return content.getContent();
+        if (ObjectUtils.isEmpty(content)) {
+            return "";
         } else
-            return "数据库中无数据";
+            return content.getContent();
     }
 
 
