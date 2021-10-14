@@ -88,6 +88,9 @@
     import {message} from "ant-design-vue";
     import {Tool} from "@/util/tool";
 
+    declare let hexMd5: any;
+    declare let KEY: any;
+
     export default defineComponent({
         name: 'AdminUser',
         setup() {
@@ -165,6 +168,8 @@
             const modalLoading = ref(false);
             const handleModalOk = () => {
                 modalLoading.value = true;  //在保存的时候先显示一个保存的效果
+
+                user.value.password = hexMd5(user.value.password + KEY);    //在前端对密码进行一次md5加密
 
                 //在对编辑好的用户信息进行保存,发保存请求
                 axios.post("/user/save", user.value).then((response) => {

@@ -3,9 +3,10 @@ package com.example.wiki.controller;
 import com.example.wiki.req.UserQueryReq;
 import com.example.wiki.req.UserSaveReq;
 import com.example.wiki.resp.CommonResp;
-import com.example.wiki.resp.UserQueryResp;
 import com.example.wiki.resp.PageResp;
+import com.example.wiki.resp.UserQueryResp;
 import com.example.wiki.service.UserService;
+import org.springframework.util.DigestUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -40,6 +41,7 @@ public class UserController {
 
     @PostMapping("/save")//@RequestBody 注解是代表了以json格式post，而不是文件二进制上传格式，没有注解默认为二进制
     public CommonResp save(@Valid @RequestBody UserSaveReq req) {
+        req.setPassword(DigestUtils.md5DigestAsHex(req.getPassword().getBytes()));  //对密码进行md5加密处理
         CommonResp resp = new CommonResp<>();
         userService.save(req);
         return resp;
