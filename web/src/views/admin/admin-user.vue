@@ -53,6 +53,7 @@
 
                     </a-space>
                 </template>
+
             </a-table>
         </a-layout-content>
     </a-layout>
@@ -66,7 +67,8 @@
 
         <a-form :model="user" :label-col="{ span: 6 }" :wrapper-col="{ span: 18 }">
             <a-form-item label="登录名">
-                <a-input v-model:value="user.loginName"/>
+                <a-input v-model:value="user.loginName" :disabled="!!user.id"/>
+                <!--disabled如果有值的话就不能修改，没有值的话就可以修改  !!使用时用于绕过类型校验，因为disabled应该是一个Boolean值，而不是一个number值-->
             </a-form-item>
             <a-form-item label="昵称">
                 <a-input v-model:value="user.name"/>
@@ -111,7 +113,7 @@
                 },
                 {
                     title: '密码',
-                    dataIndex: 'password '
+                    dataIndex: 'password'
                 },
                 {
                     title: 'Action',
@@ -151,7 +153,6 @@
              * 表格点击页码时触发
              */
             const handleTableChange = (pagination: any) => {
-                console.log("看看自带的分页参数都有啥：" + pagination);
                 handleQuery({
                     page: pagination.current,
                     size: pagination.pageSize
