@@ -2,6 +2,8 @@ package com.example.wiki.service;
 
 import com.example.wiki.domain.User;
 import com.example.wiki.domain.UserExample;
+import com.example.wiki.exception.BusinessException;
+import com.example.wiki.exception.BusinessExceptionCode;
 import com.example.wiki.mapper.UserMapper;
 import com.example.wiki.req.UserQueryReq;
 import com.example.wiki.req.UserSaveReq;
@@ -14,6 +16,7 @@ import com.github.pagehelper.PageInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
 import javax.annotation.Resource;
@@ -77,10 +80,17 @@ public class UserService {
     public void save(UserSaveReq req) {
         User user = CopyUtil.copy(req, User.class);  //将请求参数变成我们的实体
         if (ObjectUtils.isEmpty(req.getId())) {
-            //新增
-            // 新增
-            user.setId(snowFlake.nextId());
-            userMapper.insert(user);
+
+            //判断数据库中不存在此用户的话就可以进行新增操作
+            if (ObjectUtils.isEmpty(selectByLoginName(req.getLoginName()))) {
+                //新增
+                user.setId(snowFlake.nextId());
+                userMapper.insert(user);
+            } else {
+                // 用户名已经存在，需要对前端进行一个返回，提醒前端用户名存在的话需要进行对应的操作
+                throw new BusinessException(BusinessExceptionCode.USER_LOGIN_NAME_EXIST);
+            }
+
         } else {
             //更新
             userMapper.updateByPrimaryKey(user);
@@ -95,5 +105,25 @@ public class UserService {
     public void delete(Long id) {
         userMapper.deleteByPrimaryKey(id);
     }
+
+
+    /**
+     * 通过id查找用户
+     *
+     * @param loginName
+     * @return
+     */
+    public User selectByLoginName(String loginName) {
+        UserExample userExample = new UserExample();
+        UserExample.Criteria criteria = userExample.createCriteria(); //以上两行为固定写法
+        criteria.andLoginNameEqualTo(loginName);
+        List<User> userList = userMapper.selectByExample(userExample);  //使用了mybatis所以需要使用list来接收
+        if (CollectionUtils.isEmpty(userList)) {
+            return null;    //没有，则返回空
+        } else {
+            return userList.get(0); //如果有，则返回第一条数据
+        }
+    }
+
 
 }
