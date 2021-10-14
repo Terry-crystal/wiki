@@ -73,7 +73,7 @@
             <a-form-item label="昵称">
                 <a-input v-model:value="user.name"/>
             </a-form-item>
-            <a-form-item label="密码">
+            <a-form-item label="密码" v-show="!user.id">      <!--如果是新增，则显示密码框，如果是修改，则不显示密码框-->
                 <a-input v-model:value="user.password"/>
             </a-form-item>
         </a-form>

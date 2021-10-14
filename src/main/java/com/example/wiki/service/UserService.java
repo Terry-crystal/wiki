@@ -94,6 +94,7 @@ public class UserService {
         } else {
             //更新    以下有着对应的防黑客的功能
             user.setLoginName(null);    //设置更新的uer内不应该有loginName的值
+            user.setPassword(null); //把密码也清空，不允许修改
             userMapper.updateByPrimaryKeySelective(user);   //如果user里面属性有值才去修改对应的字段，所以上面的loginName中的值时null不会被修改到数据库中
         }
     }
