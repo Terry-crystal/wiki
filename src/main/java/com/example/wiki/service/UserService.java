@@ -5,10 +5,12 @@ import com.example.wiki.domain.UserExample;
 import com.example.wiki.exception.BusinessException;
 import com.example.wiki.exception.BusinessExceptionCode;
 import com.example.wiki.mapper.UserMapper;
+import com.example.wiki.req.UserLoginReq;
 import com.example.wiki.req.UserQueryReq;
 import com.example.wiki.req.UserResetPasswordReq;
 import com.example.wiki.req.UserSaveReq;
 import com.example.wiki.resp.PageResp;
+import com.example.wiki.resp.UserLoginResp;
 import com.example.wiki.resp.UserQueryResp;
 import com.example.wiki.util.CopyUtil;
 import com.example.wiki.util.SnowFlake;
@@ -136,6 +138,32 @@ public class UserService {
     public void resetPassword(UserResetPasswordReq req) {
         User user = CopyUtil.copy(req, User.class);  //将请求参数变成我们的实体
         userMapper.updateByPrimaryKeySelective(user);
+    }
+
+
+    /**
+     * 登录
+     *
+     * @param req
+     * @return
+     */
+    public UserLoginResp login(UserLoginReq req) {
+        User userDb = selectByLoginName(req.getLoginName());
+        if (ObjectUtils.isEmpty(userDb)) {
+            //用户名不存在
+            LOG.info("用户名不存在：{}", req.getLoginName());
+            throw new BusinessException(BusinessExceptionCode.USER_LOGIN_NAME_EXIST);
+        } else {
+            if (userDb.getPassword().equals(req.getPassword())) {
+                //登录成功
+                UserLoginResp userLoginResp = CopyUtil.copy(userDb, UserLoginResp.class);   //登录成功之后把数据复制到返回的实体类中
+                return userLoginResp;
+            } else {
+                //密码错误
+                LOG.info("密码不对，输入密码：{}", req.getPassword(), userDb.getPassword());  //在这里还可以加个小功能，密码输错五次锁定用户
+                throw new BusinessException(BusinessExceptionCode.USER_LOGIN_NAME_EXIST);
+            }
+        }
     }
 
 
