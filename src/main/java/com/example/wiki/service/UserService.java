@@ -6,6 +6,7 @@ import com.example.wiki.exception.BusinessException;
 import com.example.wiki.exception.BusinessExceptionCode;
 import com.example.wiki.mapper.UserMapper;
 import com.example.wiki.req.UserQueryReq;
+import com.example.wiki.req.UserResetPasswordReq;
 import com.example.wiki.req.UserSaveReq;
 import com.example.wiki.resp.PageResp;
 import com.example.wiki.resp.UserQueryResp;
@@ -125,6 +126,16 @@ public class UserService {
         } else {
             return userList.get(0); //如果有，则返回第一条数据
         }
+    }
+
+    /**
+     * 修改密码
+     *
+     * @param req
+     */
+    public void resetPassword(UserResetPasswordReq req) {
+        User user = CopyUtil.copy(req, User.class);  //将请求参数变成我们的实体
+        userMapper.updateByPrimaryKeySelective(user);
     }
 
 

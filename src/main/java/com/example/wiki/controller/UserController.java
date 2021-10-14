@@ -1,6 +1,7 @@
 package com.example.wiki.controller;
 
 import com.example.wiki.req.UserQueryReq;
+import com.example.wiki.req.UserResetPasswordReq;
 import com.example.wiki.req.UserSaveReq;
 import com.example.wiki.resp.CommonResp;
 import com.example.wiki.resp.PageResp;
@@ -46,6 +47,15 @@ public class UserController {
         userService.save(req);
         return resp;
     }
+
+    @PostMapping("/reset-password")
+    public CommonResp resetPassword(@Valid @RequestBody UserResetPasswordReq req) {
+        req.setPassword(DigestUtils.md5DigestAsHex(req.getPassword().getBytes()));  //对密码进行md5加密处理
+        CommonResp resp = new CommonResp<>();
+        userService.resetPassword(req);
+        return resp;
+    }
+
 
     @DeleteMapping("/delete/{id}")
     public CommonResp delete(@PathVariable Long id) {

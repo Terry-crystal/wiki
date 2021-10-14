@@ -28,7 +28,7 @@
 
             <a-table
                     :columns="columns"
-                    :row-key=" record=> record.id"
+                    :row-key="record=> record.id"
                     :data-source="users"
                     :pagination="pagination"
                     :loading="loading"
@@ -50,6 +50,10 @@
                         >
                             <a-button type="danger">删除</a-button>
                         </a-popconfirm>
+
+                        <a-button type="primary" @click="resetPassword(record)">
+                            重置密码
+                        </a-button>
 
                     </a-space>
                 </template>
@@ -74,6 +78,22 @@
                 <a-input v-model:value="user.name"/>
             </a-form-item>
             <a-form-item label="密码" v-show="!user.id">      <!--如果是新增，则显示密码框，如果是修改，则不显示密码框-->
+                <a-input v-model:value="user.password"/>
+            </a-form-item>
+        </a-form>
+
+    </a-modal>
+
+
+    <a-modal
+            title="重置密码"
+            v-model:visible="resetModalVisible"
+            :confirm-loading="resetModalLoading"
+            @ok="handleResetModalOk"
+    >
+
+        <a-form :model="user" :label-col="{ span: 6 }" :wrapper-col="{ span: 18 }">
+            <a-form-item label="新密码">      <!--如果是新增，则显示密码框，如果是修改，则不显示密码框-->
                 <a-input v-model:value="user.password"/>
             </a-form-item>
         </a-form>
@@ -222,6 +242,43 @@
                 });
             };
 
+
+            // -------- 重置密码表单 ---------
+            const resetModalVisible = ref(false);
+            const resetModalLoading = ref(false);
+            const handleResetModalOk = () => {
+                resetModalLoading.value = true;  //在保存的时候先显示一个保存的效果
+
+                user.value.password = hexMd5(user.value.password + KEY);    //在前端对密码进行一次md5加密
+
+                //在对编辑好的用户信息进行保存,发保存请求
+                axios.post("/user/reset-password", user.value).then((response) => {
+                    resetModalLoading.value = false; //只要后端有返回，就把效果去掉
+
+                    const data = response.data;//data=CommonResp
+                    if (data.success) {
+                        resetModalVisible.value = false; //拿到结果之后才会取消loading效果
+
+                        //重新加载列表
+                        handleQuery({
+                            page: pagination.value.current, //重新查询当前这个分页组件所在的页码
+                            size: pagination.value.pageSize,
+                        });
+                    } else {
+                        message.error(data.message);
+                    }
+                });
+            };
+
+            /**
+             * 重置密码
+             */
+            const resetPassword = (record: any) => {
+                resetModalVisible.value = true;  //显示模糊框
+                user.value = Tool.copy(record);   //从record响应式变量中先复制对象再填充获取数据填充到模糊框
+                user.value.password = null;
+            };
+
             onMounted(() => {
                 handleQuery({
                     page: 1,
@@ -245,6 +302,11 @@
                 modalVisible,
                 modalLoading,
                 handleModalOk,
+
+                resetModalVisible,
+                resetModalLoading,
+                handleResetModalOk,
+                resetPassword,
 
                 handleUserDelete
             };
