@@ -1,5 +1,6 @@
 package com.example.wiki.controller;
 
+import com.alibaba.fastjson.JSONObject;
 import com.example.wiki.req.UserLoginReq;
 import com.example.wiki.req.UserQueryReq;
 import com.example.wiki.req.UserResetPasswordReq;
@@ -9,11 +10,17 @@ import com.example.wiki.resp.PageResp;
 import com.example.wiki.resp.UserLoginResp;
 import com.example.wiki.resp.UserQueryResp;
 import com.example.wiki.service.UserService;
+import com.example.wiki.util.SnowFlake;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.util.DigestUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.validation.Valid;
+import java.util.concurrent.TimeUnit;
+
 
 /**
  * @author Crystal
@@ -24,8 +31,17 @@ import javax.validation.Valid;
 @RequestMapping("/user")
 public class UserController {
 
+    private static final Logger LOG = LoggerFactory.getLogger(UserController.class);
+
     @Resource
     private UserService userService;
+
+    @Resource
+    private RedisTemplate redisTemplate;    //将登录信息保存在redis里面
+
+    @Resource
+    private SnowFlake snowFlake;
+
 
     /**
      * 获取所有用户消息，有分页参数包括在内
@@ -63,6 +79,12 @@ public class UserController {
         req.setPassword(DigestUtils.md5DigestAsHex(req.getPassword().getBytes()));  //对密码进行md5加密处理
         CommonResp<UserLoginResp> resp = new CommonResp<>();
         UserLoginResp userLoginResp = userService.login(req);
+
+        Long token = snowFlake.nextId();    //使用雪花算法生成token
+        LOG.info("生成单点登录token:{}，并放入redis中",token);
+        userLoginResp.setToken(token.toString());   //将生成的token放入到返回的存储着信息的实体类中
+        redisTemplate.opsForValue().set(token, JSONObject.toJSONString(userLoginResp), 3600 * 24, TimeUnit.SECONDS); //在redis中存放token，有效期24小时
+
         resp.setContent(userLoginResp);
         return resp;
     }
