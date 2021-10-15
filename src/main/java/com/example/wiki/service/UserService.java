@@ -152,7 +152,7 @@ public class UserService {
         if (ObjectUtils.isEmpty(userDb)) {
             //用户名不存在
             LOG.info("用户名不存在：{}", req.getLoginName());
-            throw new BusinessException(BusinessExceptionCode.USER_LOGIN_NAME_EXIST);
+            throw new BusinessException(BusinessExceptionCode.LOGIN_USER_ERROR);
         } else {
             if (userDb.getPassword().equals(req.getPassword())) {
                 //登录成功
@@ -161,7 +161,7 @@ public class UserService {
             } else {
                 //密码错误
                 LOG.info("密码不对，输入密码：{}", req.getPassword(), userDb.getPassword());  //在这里还可以加个小功能，密码输错五次锁定用户
-                throw new BusinessException(BusinessExceptionCode.USER_LOGIN_NAME_EXIST);
+                throw new BusinessException(BusinessExceptionCode.LOGIN_USER_ERROR);
             }
         }
     }

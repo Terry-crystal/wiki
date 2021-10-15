@@ -57,6 +57,11 @@
 
 <script lang="ts">
     import {defineComponent, ref} from 'vue';
+    import axios from 'axios';
+    import {message} from "ant-design-vue";
+
+    declare let hexMd5: any;
+    declare let KEY: any;
 
     /*给组件起了一个名字*/
     export default defineComponent({
@@ -74,9 +79,20 @@
                 loginModalVisible.value = true;
             };
 
-            //登录
+            //登录请求操作
             const login = () => {
-                console.log("开始登录")
+                loginModalLoading.value = true;   //开始显示loading效果
+                loginUser.value.password = hexMd5(loginUser.value.password + KEY);    //在前端对密码进行一次md5加密
+                axios.post("/user/login", loginUser.value).then((response) => {
+                    loginModalLoading.value = false;  //设置通知等待
+                    const data = response.data;
+                    if (data.success) {
+                        loginModalVisible.value = false;
+                        message.success("登录成功！");
+                    } else {
+                        message.error(data.message);
+                    }
+                })
             };
 
             return {
