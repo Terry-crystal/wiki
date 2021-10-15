@@ -5,7 +5,7 @@ package com.example.wiki.req;
  * @version 1.0
  * @date 2021/9/25 15:48
  */
-public class UserQueryReq extends PageReq{
+public class UserQueryReq extends PageReq {
 
     private String loginName;
 

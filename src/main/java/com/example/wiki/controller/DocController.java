@@ -55,8 +55,8 @@ public class DocController {
     /**
      * 通过id查询文档内容
      *
-     * @param ebookId   文档的id
-     * @return  返回的内容
+     * @param ebookId 文档的id
+     * @return 返回的内容
      */
     @GetMapping("/all/{ebookId}")
     public CommonResp all(@PathVariable Long ebookId) {
