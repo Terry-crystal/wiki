@@ -3,7 +3,11 @@
 
         <div class="logo"/>
 
-        <a class="login-menu" @click="showLoginModal">
+        <a class="login-menu" v-show="user.id">
+            <span>您好：{{user.name}}</span>
+        </a>
+
+        <a class="login-menu" v-show="!user.id" @click="showLoginModal">
             <span>登录</span>
         </a>
 
@@ -68,10 +72,17 @@
         name: 'the-header',
 
         setup() {
+
+            //这个是用来登录的用户信息
             const loginUser = ref({
                 loginName: "test",
                 password: "test"
             });
+
+            //登录后保存用户信息
+            const user = ref();
+            user.value = {};  //初始化给个空对象，可以避免空指针异常
+
             const loginModalVisible = ref(false);
             const loginModalLoading = ref(false);
             //点击事件调用模态框
@@ -88,7 +99,7 @@
                     const data = response.data;
                     if (data.success) {
                         loginModalVisible.value = false;
-                        message.success("登录成功！");
+                        user.value = data.content;
                     } else {
                         message.error(data.message);
                     }
@@ -100,7 +111,8 @@
                 loginModalLoading,
                 showLoginModal,
                 loginUser,
-                login
+                login,
+                user
             }
 
         }
