@@ -6,6 +6,7 @@ import Antd from 'ant-design-vue';
 import 'ant-design-vue/dist/antd.css';
 import * as Icons from '@ant-design/icons-vue';
 import axios from 'axios';
+import {Tool} from "@/util/tool";
 
 axios.defaults.baseURL = process.env.VUE_APP_SERVER;    //改axios的baseUrl为读取系统配置文件，此baseUrl不是vue的URL！
 
@@ -15,6 +16,14 @@ axios.defaults.baseURL = process.env.VUE_APP_SERVER;    //改axios的baseUrl为�
  */
 axios.interceptors.request.use(function (config) {
     console.log('请求参数：', config);
+    const token = store.state.user.token;
+
+    //在请求头中的headers中添加token
+    if (Tool.isNotEmpty(token)) {
+        config.headers.token = token;
+        console.log("请求头headers增加token：", token);
+    }
+
     return config;
 }, error => {
     return Promise.reject(error);

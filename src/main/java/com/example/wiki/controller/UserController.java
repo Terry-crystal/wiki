@@ -113,7 +113,7 @@ public class UserController {
         Long token = snowFlake.nextId();    //使用雪花算法生成token
         LOG.info("生成单点登录token:{}，并放入redis中", token);
         userLoginResp.setToken(token.toString());   //将生成的token放入到返回的存储着信息的实体类中
-        redisTemplate.opsForValue().set(token, JSONObject.toJSONString(userLoginResp), 3600 * 24, TimeUnit.SECONDS); //在redis中存放token，有效期24小时
+        redisTemplate.opsForValue().set(token.toString(), JSONObject.toJSONString(userLoginResp), 3600 * 24, TimeUnit.SECONDS); //在redis中存放token，并且是以string类型的作为key！！有效期24小时
 
         resp.setContent(userLoginResp);
         return resp;
