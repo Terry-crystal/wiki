@@ -39,19 +39,6 @@ public class DocController {
         return resp;
     }
 
-//    /**
-//     * 一次性将所有文档数据抽取出来，不需要进行分页的处理
-//     *
-//     * @return 返回装有文档数据的list
-//     */
-//    @GetMapping("/all")
-//    public CommonResp all() {
-//        CommonResp<List<DocQueryResp>> resp = new CommonResp<>();
-//        List<DocQueryResp> list = docService.all();
-//        resp.setContent(list);
-//        return resp;
-//    }
-
     /**
      * 通过id查询文档内容
      *

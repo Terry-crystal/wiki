@@ -57,7 +57,12 @@ public class UserController {
         return resp;
     }
 
-
+    /**
+     * 保存用户接口
+     *
+     * @param req
+     * @return
+     */
     @PostMapping("/save")//@RequestBody 注解是代表了以json格式post，而不是文件二进制上传格式，没有注解默认为二进制
     public CommonResp save(@Valid @RequestBody UserSaveReq req) {
         req.setPassword(DigestUtils.md5DigestAsHex(req.getPassword().getBytes()));  //对密码进行md5加密处理
@@ -66,6 +71,25 @@ public class UserController {
         return resp;
     }
 
+    /**
+     * 删除用户接口
+     *
+     * @param id
+     * @return
+     */
+    @DeleteMapping("/delete/{id}")
+    public CommonResp delete(@PathVariable Long id) {
+        CommonResp resp = new CommonResp<>();
+        userService.delete(id);
+        return resp;
+    }
+
+    /**
+     * 重置用户密码接口
+     *
+     * @param req
+     * @return
+     */
     @PostMapping("/reset-password")
     public CommonResp resetPassword(@Valid @RequestBody UserResetPasswordReq req) {
         req.setPassword(DigestUtils.md5DigestAsHex(req.getPassword().getBytes()));  //对密码进行md5加密处理
@@ -74,6 +98,12 @@ public class UserController {
         return resp;
     }
 
+    /**
+     * 用户登录接口
+     *
+     * @param req
+     * @return
+     */
     @PostMapping("/login")
     public CommonResp login(@Valid @RequestBody UserLoginReq req) {
         req.setPassword(DigestUtils.md5DigestAsHex(req.getPassword().getBytes()));  //对密码进行md5加密处理
@@ -89,11 +119,17 @@ public class UserController {
         return resp;
     }
 
-
-    @DeleteMapping("/delete/{id}")
-    public CommonResp delete(@PathVariable Long id) {
+    /**
+     * 退出登录接口
+     *
+     * @param token
+     * @return
+     */
+    @GetMapping("/logout/{token}")
+    public CommonResp logout(@PathVariable String token) {
         CommonResp resp = new CommonResp<>();
-        userService.delete(id);
+        redisTemplate.delete(token);    //直接将在redis中的token清除即可，当然也可以写在service层
+        LOG.info("从Redis中删除token:{}", token);
         return resp;
     }
 
