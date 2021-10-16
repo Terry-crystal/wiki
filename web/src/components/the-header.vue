@@ -60,7 +60,7 @@
 </template>
 
 <script lang="ts">
-    import {defineComponent, ref} from 'vue';
+    import {computed, defineComponent, ref} from 'vue';
     import axios from 'axios';
     import {message} from "ant-design-vue";
     import store from "@/store";
@@ -81,8 +81,7 @@
             });
 
             //登录后保存用户信息
-            const user = ref();
-            user.value = {};  //初始化给个空对象，可以避免空指针异常
+            const user = computed(() => store.state.user);
 
             const loginModalVisible = ref(false);
             const loginModalLoading = ref(false);
@@ -100,8 +99,8 @@
                     const data = response.data;
                     if (data.success) {
                         loginModalVisible.value = false;
-                        user.value = data.content;
-                        store.commit("setUser", user);  //将登录信息放入到全局变量中
+                        message.success("登录成功！");
+                        store.commit("setUser", data.content);  //将登录信息放入到全局变量中
                     } else {
                         message.error(data.message);
                     }
