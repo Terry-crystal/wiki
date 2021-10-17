@@ -54,14 +54,20 @@
                 :confirm-loading="loginModalLoading"
                 @ok="login"
         >
-            <a-form :model="loginUser" :label-col="{ span: 6 }" :wrapper-col="{ span: 18 }">
+            <a-form
+                    :model="loginUser"
+                    :label-col="{ span: 6 }"
+                    :wrapper-col="{ span: 18 }"
+                    :rules="rules"
+            >
                 <a-form-item label="登录名">
                     <a-input v-model:value="loginUser.loginName"/>
                 </a-form-item>
-                <a-form-item label="密码">      <!--如果是新增，则显示密码框，如果是修改，则不显示密码框-->
+                <a-form-item label="密码" name="password">      <!--如果是新增，则显示密码框，如果是修改，则不显示密码框-->
                     <a-input v-model:value="loginUser.password" type="password"/>
                 </a-form-item>
             </a-form>
+
         </a-modal>
 
         <a class="login-menu" @click="showLoginModal">
@@ -90,8 +96,8 @@
 
             //这个是用来登录的用户信息
             const loginUser = ref({
-                loginName: "test",
-                password: "test"
+                loginName: "root",
+                password: "root"
             });
 
             //登录后保存用户信息
@@ -103,6 +109,17 @@
             const showLoginModal = () => {
                 loginModalVisible.value = true;
             };
+
+            const rules = {
+                password: [
+                    {
+                        required: true,
+                        pattern: new RegExp(/^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{6,32}$/),
+                        message: '请输入正确的密码'
+                    }
+                ]
+            };
+
 
             //登录请求操作
             const login = () => {
@@ -141,7 +158,8 @@
                 loginUser,
                 login,
                 user,
-                logout
+                logout,
+                rules
             }
 
         }
