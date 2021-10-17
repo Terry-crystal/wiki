@@ -7,12 +7,14 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.core.env.Environment;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 
 //@ComponentScan({"com.example","com.test"})    为了扫描多个包，因此可以使用
-@ComponentScan("com.example")
-@SpringBootApplication
-@MapperScan("com.example.wiki.mapper")
+@ComponentScan("com.example")   //对所有的包进行扫描
+@SpringBootApplication  //springboot启动注入
+@MapperScan("com.example.wiki.mapper")  //对mapper包扫描
+@EnableScheduling   //定时器注入
 public class WikiApplication {
 
     private static final Logger LOG = LoggerFactory.getLogger
