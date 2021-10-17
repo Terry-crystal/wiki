@@ -5,9 +5,10 @@
 </template>
 
 <script lang="ts">
-    import {computed, defineComponent,onMounted} from 'vue';
+    import {computed, defineComponent, onMounted} from 'vue';
     import store from "@/store";
     import {Tool} from "@/util/tool";
+    import {notification} from 'ant-design-vue';
 
     /*给组件起了一个名字*/
     export default defineComponent({
@@ -24,7 +25,10 @@
                 console.log('WebSocket连接成功，状态码：', websocket.readyState)
             };
             const onMessage = (event: any) => {
-                console.log('WebSocket收到消息：', event.data);
+                notification['success']({
+                    message: '通知：',
+                    description: event.data,
+                });
             };
             const onError = () => {
                 console.log('WebSocket连接错误，状态码：', websocket.readyState)

@@ -16,6 +16,7 @@ import com.example.wiki.util.CopyUtil;
 import com.example.wiki.util.RedisUtil;
 import com.example.wiki.util.RequestContext;
 import com.example.wiki.util.SnowFlake;
+import com.example.wiki.websocket.WebSocketServer;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.slf4j.Logger;
@@ -51,6 +52,9 @@ public class DocService {
 
     @Resource
     public RedisUtil redisUtil;
+
+    @Resource
+    public WebSocketServer webSocketServer;
 
 
     public PageResp<DocQueryResp> list(DocQueryReq req) {
@@ -192,6 +196,10 @@ public class DocService {
         } else {
             throw new BusinessException(BusinessExceptionCode.VOTE_REPEAT); //如果点赞过了就返回异常，提醒前面操作已经做过
         }
+
+        //推送消息
+        Doc docDb = docMapper.selectByPrimaryKey(id);
+        webSocketServer.sendInfo("[" + docDb.getName() + "]被点赞！");
     }
 
     /**

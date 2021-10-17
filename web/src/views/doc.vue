@@ -128,8 +128,7 @@
                 axios.get("/doc/vote/" + doc.value.id).then((response) => {
                     const data = response.data;
                     if (data.success) {
-                        doc.value.voteCount++;  //点赞数加1
-                        message.success("点赞成功！");
+                        doc.value.voteCount++;  //点赞数+1
                     } else {
                         message.error(data.message);
                     }
