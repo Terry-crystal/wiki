@@ -79,9 +79,11 @@ public class EbookService {
     public void save(EbookSaveReq req) {
         Ebook ebook = CopyUtil.copy(req, Ebook.class);  //将请求参数变成我们的实体
         if (ObjectUtils.isEmpty(req.getId())) {
-            //新增
             // 新增
             ebook.setId(snowFlake.nextId());
+            ebook.setDocCount(0);
+            ebook.setViewCount(0);
+            ebook.setVoteCount(0);
             ebookMapper.insert(ebook);
         } else {
             //更新
