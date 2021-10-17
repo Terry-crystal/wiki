@@ -24,6 +24,13 @@
                         <a-divider style="height: 2px; background-color: #7cb305"/>
                     </div>
                     <div class="wangeditor" :innerHTML="html"></div>
+                    <div class="vote-div">
+                        <a-button type="primary" shape="round" :size="'large'" @click="vote">
+                            <template #icon>
+                                <LikeOutlined/> &nbsp; 点赞:{{doc.voteCount}}
+                            </template>
+                        </a-button>
+                    </div>
                 </a-col>
             </a-row>
         </a-layout-content>
@@ -116,6 +123,19 @@
                 }
             };
 
+            //点赞功能网络请求
+            const vote = () => {
+                axios.get("/doc/vote/" + doc.value.id).then((response) => {
+                    const data = response.data;
+                    if (data.success) {
+                        doc.value.voteCount++;  //点赞数加1
+                        message.success("点赞成功！");
+                    } else {
+                        message.error(data.message);
+                    }
+                });
+            };
+
             onMounted(() => {
                 handleQuery();
             });
@@ -125,7 +145,8 @@
                 html,
                 onSelect,
                 defaultSelectedKeys,
-                doc
+                doc,
+                vote
             }
         }
     });
@@ -188,5 +209,11 @@
         margin: 20px 10px !important;
         font-size: 16px !important;
         font-weight: 600;
+    }
+
+    /* 点赞按钮样式 */
+    .vote-div {
+        padding: 15px;
+        text-align: center;
     }
 </style>
