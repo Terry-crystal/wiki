@@ -194,4 +194,11 @@ public class DocService {
         }
     }
 
+    /**
+     * 整合点赞观看数信息
+     */
+    public void updateEbookInfo() {
+        docMapperCust.updateEbookInfo();
+    }
+
 }
