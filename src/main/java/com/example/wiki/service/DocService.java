@@ -22,6 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 
 import javax.annotation.Resource;
@@ -120,6 +121,7 @@ public class DocService {
     /**
      * 保存文档功能 可以是编辑的保存也可以是新增的保存
      */
+    @Transactional  //事务注解，因为下面的操作涉及了多张表的操纵，如果出现有表的数据修改而另一张表的数据没有修改的化，则会有数据误差，因此使用这个注解来保证数据的准确性，性质和Async一样，只能被别的类调用的时候生效
     public void save(DocSaveReq req) {
         Doc doc = CopyUtil.copy(req, Doc.class);  //将请求参数变成我们的实体
         Content content = CopyUtil.copy(req, Content.class);  //将请求参数变成我们的实体
