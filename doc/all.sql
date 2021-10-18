@@ -167,6 +167,39 @@ create table `ebook_snapshot`
     `vote_count`    int                   not null default 0 comment '点赞数',
     `view_increase` int                   not null default 0 comment '阅读增长',
     `vote_increase` int                   not null default 0 comment '点赞增长',
-    primary key (`id`)
+    primary key (`id`),
+    unique key `ebook_id_date_unique` (`ebook_id`, `date`) /*ebookid和date两个字段组成一个唯一键*/
 ) engine = innodb
   default charset = utf8mb4 comment ='电子书快照表';
+
+
+# 查出某的天的数据并且插入一条某天的电子书快照数据
+insert into ebook_snapshot(ebook_id, `date`, view_count, vote_count, view_increase, vote_increase)
+select t1.id, curdate(), 0, 0, 0, 0
+from ebook t1
+where not exists
+    (select 1 from ebook_snapshot t2 where t1.id = t2.ebook_id and t2.`date` = curdate());
+
+
+# 判断今天是否有创建并且将数据从业务表放到中间表
+update ebook_snapshot t1,ebook t2
+set t1.view_count = t2.view_count,
+    t1.vote_count=t2.vote_count
+where t1.`date` = curdate()
+  and t1.ebook_id = t2.id;
+
+
+#获取昨天数据
+select t1.ebook_id, view_count, vote_count
+from ebook_snapshot t1
+where t1.`date` = date_sub(curdate(), interval 1 day);
+
+
+# 无论左边表，也就是ebook_snapshot，在无论右边的表中查出的数据中是否存在，都会去更新一次
+update ebook_snapshot t1 left join
+    (select ebook_id, view_count, vote_count
+     from ebook_snapshot
+     where `date` = date_sub(curdate(), interval 1 day)) t2 on t1.ebook_id = t2.ebook_id
+set t1.view_increase=(t1.view_count - ifnull(t2.view_count,0)),
+    t1.vote_increase=(t1.vote_count - ifnull(t2.vote_count,0))
+where t1.`date` = curdate();
