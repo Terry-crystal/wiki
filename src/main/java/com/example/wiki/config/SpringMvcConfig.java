@@ -24,7 +24,8 @@ public class SpringMvcConfig implements WebMvcConfigurer {
                         "/ebook/list",
                         "/doc/all/**",  //表示后面的值是任意的
                         "/doc/find-content/**",
-                        "/doc/vote/**"
+                        "/doc/vote/**",
+                        "/ebook-snapshot/get-statistic"
                 );
     }
 

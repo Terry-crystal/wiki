@@ -1,6 +1,6 @@
 package com.example.wiki.job;
 
-import com.example.wiki.service.EbookService;
+import com.example.wiki.service.EbookSnapshotService;
 import com.example.wiki.util.SnowFlake;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,7 +24,7 @@ public class EbookSnapshotJob {
     private static final Logger LOG = LoggerFactory.getLogger(EbookSnapshotJob.class);
 
     @Resource
-    EbookService ebookService;
+    EbookSnapshotService ebookSnapshotService;
 
     @Resource
     private SnowFlake snowFlake;    //注入雪花算法
@@ -37,7 +37,7 @@ public class EbookSnapshotJob {
         MDC.put("LOG_ID", String.valueOf(snowFlake.nextId()));  //增加日志流水号
         LOG.info("将Ebook中的数据汇总到EbookSnapshot表中");
         long start = System.currentTimeMillis();
-        ebookService.getSnapshot();
+        ebookSnapshotService.getSnapshot();
         LOG.info("更新EbookSnapshot表中数据，耗时{}毫秒", System.currentTimeMillis() - start);
     }
 
