@@ -1,8 +1,8 @@
 <template>
+
     <a-layout-header class="header">
 
-        <div class="logo"/>
-
+        <div class="logo">纯纯牛马知识库</div>
 
         <a class="login-menu" v-show="!user.id" @click="showLoginModal">
             <span>登录</span>
@@ -172,5 +172,12 @@
         float: right;
         color: white;
         padding-left: 20px;
+    }
+    .logo {
+        width: 150px;
+        height: 31px;
+        float: left;
+        color: white;
+        font-size: 18px;
     }
 </style>

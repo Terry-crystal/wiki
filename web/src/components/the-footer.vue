@@ -1,6 +1,6 @@
 <template>
     <a-layout-footer style="text-align: center">
-        伞兵电子书管理系统<span v-show="user.id">欢迎您：{{user.name}}</span>
+        纯纯牛马电子书管理系统<span v-show="user.id">欢迎您：{{user.name}}</span>
     </a-layout-footer>
 </template>
 
