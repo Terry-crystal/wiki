@@ -32,7 +32,7 @@ public class EbookSnapshotJob {
     /**
      * 实现业务表中的数据流入到中间表，将数据的阅读量消息和点赞量消息汇总并且放入中间表
      */
-    @Scheduled(cron = "0/5 * * * * ?")
+    @Scheduled(cron = "0/10 * * * * ? ")
     public void cron() throws InterruptedException {
         MDC.put("LOG_ID", String.valueOf(snowFlake.nextId()));  //增加日志流水号
         LOG.info("将Ebook中的数据汇总到EbookSnapshot表中");

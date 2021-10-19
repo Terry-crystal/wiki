@@ -202,9 +202,8 @@ public class DocService {
         //推送消息(使用了异步化)
         Doc docDb = docMapper.selectByPrimaryKey(id);   //先从数据库中查出个人消息
         String log_id = MDC.get("LOG_ID");
-        wsService.sendInfo("[" + docDb.getName() + "]被点赞！",log_id);
+        wsService.sendInfo("[" + docDb.getName() + "]被点赞！", log_id);
     }
-
 
 
     /**

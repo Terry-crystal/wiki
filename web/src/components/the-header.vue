@@ -96,8 +96,8 @@
 
             //这个是用来登录的用户信息
             const loginUser = ref({
-                loginName: "root",
-                password: "root"
+                loginName: "",
+                password: ""
             });
 
             //登录后保存用户信息
@@ -173,6 +173,7 @@
         color: white;
         padding-left: 20px;
     }
+
     .logo {
         width: 150px;
         height: 31px;

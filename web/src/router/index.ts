@@ -29,31 +29,31 @@ const routes: Array<RouteRecordRaw> = [
         path: '/admin/ebook',
         name: 'AdminEbook',
         component: AdminEbook,
-        meta:{
-            loginRequire:true   //这些是为了防止没有登录的时候直接通过路由访问页面，在这做个参数方便后面拦截
+        meta: {
+            loginRequire: true   //这些是为了防止没有登录的时候直接通过路由访问页面，在这做个参数方便后面拦截
         }
     },
     {
         path: '/admin/category',
         name: 'AdminCategory',
         component: AdminCategory,
-        meta:{
-            loginRequire:true
+        meta: {
+            loginRequire: true
         }
     }, {
         path: '/admin/doc',
         name: 'Admindoc',
         component: AdminDoc,
-        meta:{
-            loginRequire:true
+        meta: {
+            loginRequire: true
         }
     },
     {
         path: '/admin/user',
         name: 'AdminUser',
         component: AdminUser,
-        meta:{
-            loginRequire:true
+        meta: {
+            loginRequire: true
         }
     },
 ];
