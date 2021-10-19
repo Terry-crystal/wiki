@@ -143,38 +143,93 @@
             };
 
 
-            const testEcharts = () => {
+            /**
+             * 渲染30天趋势图表数据
+             * @param list
+             */
+            const init30DayEcharts = (list: any) => {
                 // 基于准备好的dom，初始化echarts实例
                 const myChart = echarts.init(document.getElementById('main'));
+
+                const xAxis = [];   //横轴数据
+                const seriesView = [];  //纵轴数据
+                const seriesVote = [];  //纵轴数据
+
+                for (let i = 0; i < list.length; i++) {
+                    const record = list[i];
+                    xAxis.push(record.date);
+                    seriesView.push(record.viewIncrease);
+                    seriesVote.push(record.voteIncrease);
+                }
 
                 // 指定图表的配置项和数据
                 const option = {
                     title: {
-                        text: 'ECharts 入门示例'
+                        text: '30天趋势图'
                     },
-                    tooltip: {},
+                    tooltip: {
+                        trigger: 'axis'
+                    },
                     legend: {
-                        data: ['销量']
+                        data: ['总阅读量', '总点赞数']
+                    },
+                    grid: {
+                        left: '1%',
+                        right: '3%',
+                        bottom: '3%',
+                        containLabel: true
+
+                    },
+                    toolbox: {
+                        feature: {
+                            saveImage: {}
+                        }
                     },
                     xAxis: {
-                        data: ["衬衫", "羊毛衫", "雪纺衫", "裤子", "高跟鞋", "袜子"]
+                        type: 'category',
+                        boundaryGap: false,
+                        data: xAxis //x轴放这个变量
                     },
-                    yAxis: {},
-                    series: [{
-                        name: '销量',
-                        type: 'bar',
-                        data: [5, 20, 36, 10, 10, 20]
-                    }]
+                    yAxis: {
+                        type: 'value'
+                    },
+                    series: [
+                        {
+                            name: '总阅读数',
+                            type: 'line',
+                            data: seriesView,
+                            smooth: true
+                        },
+                        {
+                            name: '总点赞量',
+                            type: 'line',
+                            data: seriesVote,
+                            smooth: true
+                        }
+                    ]
                 };
 
                 // 使用刚指定的配置项和数据显示图表。
                 myChart.setOption(option);
             };
 
+            /**
+             * 发网络请求获取30天数据并且进行初始化渲染图表
+             */
+            const get30DayStatistic = () => {
+                axios.get('ebook-snapshot/get-30-statistic').then((response) => {
+                    const data = response.data;
+                    if (data.success) {
+                        const statisticList = data.content;
+
+                        init30DayEcharts(statisticList);    //拿到数据之后开始渲染图表
+                    }
+                })
+            };
 
             onMounted(() => {
                 getStatistic();
-                testEcharts();
+                get30DayStatistic();
             });
 
             return {
