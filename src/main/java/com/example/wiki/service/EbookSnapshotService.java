@@ -28,8 +28,12 @@ public class EbookSnapshotService {
         ebookSnapshotMapperCust.getSnapshot();
     }
 
+    /**
+     * 获取总阅读数，总点赞数，今天阅读数，今天点赞数
+     *
+     * @return
+     */
     public List<StatisticResp> getStatistic() {
         return ebookSnapshotMapperCust.getStatistic();
     }
-
 }
