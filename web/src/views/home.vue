@@ -31,7 +31,7 @@
         >
 
             <div class="welcome" v-show="isShowWelcome">
-                <h1>欢迎使用伞兵知识库</h1>
+                <the-welcome></the-welcome>
             </div>
 
             <a-list item-layout="vertical" size="large" v-show="!isShowWelcome"
@@ -86,9 +86,15 @@
     import axios from 'axios';
     import {message} from "ant-design-vue";
     import {Tool} from "@/util/tool";
+    import TheWelcome from '@/components/the-welcome.vue';
 
     export default defineComponent({
         name: 'Home',
+
+        components: {
+            TheWelcome
+        },
+
         setup() {
             console.log("setup");
             const ebooks = ref();   //这个是一个响应式的数据！
